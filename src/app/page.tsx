@@ -646,10 +646,10 @@ function generateFullBracket(teams: CompleteTeam[], strategy: string): Game[][] 
       ['saint-marys', 'texas-am'], ['houston', 'idaho'],
     ],
     'Midwest': [
-      ['michigan', 'howard'], ['alabama', 'saint-louis'],
-      ['georgia', 'akron'], ['creighton', 'wright-state'],
-      ['iowa-state', 'miami-oh'], ['kentucky', 'tennessee-state'],
-      ['oklahoma', 'santa-clara'], ['auburn', 'umbc'],
+      ['michigan', 'howard'], ['georgia', 'saint-louis'],
+      ['texas-tech', 'akron'], ['alabama', 'hofstra'],
+      ['tennessee', 'smu'], ['virginia', 'wright-state'],
+      ['kentucky', 'santa-clara'], ['iowa-state', 'tennessee-state'],
     ],
     'West': [
       ['arizona', 'long-island'], ['villanova', 'utah-state'],
