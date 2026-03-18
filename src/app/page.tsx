@@ -86,11 +86,16 @@ export default function Dashboard() {
     return Array.from(championshipOdds.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
-      .map(([teamId, odds]) => ({
-        team: teams.find(t => t.id === teamId)!,
-        odds: odds * 100,
-        dna: calculateChampionshipProbability(teams.find(t => t.id === teamId)!)
-      }));
+      .map(([teamId, odds]) => {
+        const team = teams.find(t => t.id === teamId);
+        if (!team) return null;
+        return {
+          team,
+          odds: odds * 100,
+          dna: calculateChampionshipProbability(team)
+        };
+      })
+      .filter(Boolean);
   }, [championshipOdds, teams]);
 
   const upsetCount = useMemo(() => {
