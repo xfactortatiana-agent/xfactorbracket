@@ -7,7 +7,7 @@ import {
   injuryImpact,
   momentumWeights,
   upsetIndicators,
-  tournamentField2025,
+  tournamentField2026 as tournamentField2025,
   modelWeights,
 } from '../data/ultimateDataset';
 

@@ -277,80 +277,82 @@ export const upsetIndicators = {
 // Complete dataset with KenPom, injuries, and historical context
 // ============================================================================
 
-export const tournamentField2025 = [
-  // SOUTH REGION
-  { id: 'florida', name: 'Florida', seed: 1, region: 'South', record: '26-7', kenPomRank: 4, adjOE: 120.5, adjDE: 93.2, tempo: 70.8, conference: 'SEC', injuries: [], momentum: 'hot' },
-  { id: 'houston', name: 'Houston', seed: 2, region: 'South', record: '30-4', kenPomRank: 5, adjOE: 119.2, adjDE: 92.8, tempo: 64.2, conference: 'Big 12', injuries: ['Jwan Roberts - questionable'], momentum: 'hot' },
-  { id: 'iowa-st', name: 'Iowa State', seed: 3, region: 'South', record: '25-7', kenPomRank: 6, adjOE: 118.5, adjDE: 92.5, tempo: 65.8, conference: 'Big 12', injuries: ['Keshon Gilbert - out'], momentum: 'neutral' },
-  { id: 'texas-am', name: 'Texas A&M', seed: 4, region: 'South', record: '22-9', kenPomRank: 18, adjOE: 114.8, adjDE: 95.2, tempo: 66.4, conference: 'SEC', injuries: [], momentum: 'neutral' },
-  { id: 'michigan', name: 'Michigan', seed: 5, region: 'South', record: '21-10', kenPomRank: 3, adjOE: 121.8, adjDE: 89.5, tempo: 66.8, conference: 'Big Ten', injuries: ['LJ Cason - out'], momentum: 'hot' },
-  { id: 'ole-miss', name: 'Ole Miss', seed: 6, region: 'South', record: '20-11', kenPomRank: 32, adjOE: 113.2, adjDE: 97.5, tempo: 68.9, conference: 'SEC', injuries: [], momentum: 'neutral' },
-  { id: 'marquette', name: 'Marquette', seed: 7, region: 'South', record: '19-12', kenPomRank: 29, adjOE: 112.8, adjDE: 98.2, tempo: 67.5, conference: 'Big East', injuries: [], momentum: 'cold' },
-  { id: 'louisville', name: 'Louisville', seed: 8, region: 'South', record: '24-10', kenPomRank: 19, adjOE: 114.5, adjDE: 96.8, tempo: 69.5, conference: 'ACC', injuries: ['Mikel Brown Jr - questionable'], momentum: 'hot' },
-  { id: 'gonzaga', name: 'Gonzaga', seed: 9, region: 'South', record: '25-6', kenPomRank: 15, adjOE: 119.2, adjDE: 101.5, tempo: 71.3, conference: 'WCC', injuries: [], momentum: 'neutral' },
-  { id: 'new-mexico', name: 'New Mexico', seed: 10, region: 'South', record: '26-5', kenPomRank: 41, adjOE: 114.5, adjDE: 102.8, tempo: 69.8, conference: 'Mountain West', injuries: [], momentum: 'hot' },
-  { id: 'drake', name: 'Drake', seed: 11, region: 'South', record: '28-3', kenPomRank: 52, adjOE: 113.8, adjDE: 103.2, tempo: 67.1, conference: 'Missouri Valley', injuries: [], momentum: 'hot' },
-  { id: 'mcneese', name: 'McNeese', seed: 12, region: 'South', record: '28-3', kenPomRank: 58, adjOE: 110.5, adjDE: 104.5, tempo: 66.2, conference: 'Southland', injuries: [], momentum: 'hot' },
-  { id: 'vermont', name: 'Vermont', seed: 13, region: 'South', record: '26-5', kenPomRank: 68, adjOE: 108.2, adjDE: 102.5, tempo: 64.2, conference: 'America East', injuries: [], momentum: 'neutral' },
-  { id: 'montana', name: 'Montana', seed: 14, region: 'South', record: '24-8', kenPomRank: 88, adjOE: 106.8, adjDE: 104.2, tempo: 63.5, conference: 'Big Sky', injuries: [], momentum: 'neutral' },
-  { id: 'norfolk-st', name: 'Norfolk State', seed: 15, region: 'South', record: '22-10', kenPomRank: 125, adjOE: 102.5, adjDE: 106.8, tempo: 65.1, conference: 'MEAC', injuries: [], momentum: 'neutral' },
-  { id: 'southeast-mo', name: 'Southeast Missouri', seed: 16, region: 'South', record: '19-13', kenPomRank: 158, adjOE: 98.2, adjDE: 108.5, tempo: 66.4, conference: 'Ohio Valley', injuries: [], momentum: 'neutral' },
-  
+export const tournamentField2026 = [
   // EAST REGION
-  { id: 'duke', name: 'Duke', seed: 1, region: 'East', record: '29-3', kenPomRank: 1, adjOE: 125.2, adjDE: 91.8, tempo: 70.5, conference: 'ACC', injuries: ['Cooper Flagg - returning', 'Maliq Brown - questionable'], momentum: 'hot' },
-  { id: 'alabama', name: 'Alabama', seed: 2, region: 'East', record: '25-6', kenPomRank: 8, adjOE: 121.5, adjDE: 98.2, tempo: 73.2, conference: 'SEC', injuries: ['Latrell Wrightsell - out', 'Derrion Reid - questionable'], momentum: 'neutral' },
-  { id: 'baylor', name: 'Baylor', seed: 3, region: 'East', record: '23-8', kenPomRank: 14, adjOE: 118.5, adjDE: 96.2, tempo: 69.8, conference: 'Big 12', injuries: [], momentum: 'neutral' },
-  { id: 'arizona', name: 'Arizona', seed: 4, region: 'East', record: '22-9', kenPomRank: 2, adjOE: 123.5, adjDE: 92.1, tempo: 69.2, conference: 'Big 12', injuries: [], momentum: 'hot' },
-  { id: 'clemson', name: 'Clemson', seed: 5, region: 'East', record: '21-10', kenPomRank: 24, adjOE: 115.8, adjDE: 98.2, tempo: 67.2, conference: 'ACC', injuries: [], momentum: 'neutral' },
-  { id: 'byu', name: 'BYU', seed: 6, region: 'East', record: '23-8', kenPomRank: 22, adjOE: 116.2, adjDE: 99.5, tempo: 70.8, conference: 'Big 12', injuries: ['Kanon Catchings - questionable'], momentum: 'neutral' },
-  { id: 'dayton', name: 'Dayton', seed: 7, region: 'East', record: '24-7', kenPomRank: 35, adjOE: 114.5, adjDE: 100.2, tempo: 66.5, conference: 'A-10', injuries: [], momentum: 'hot' },
-  { id: 'mississippi-st', name: 'Mississippi State', seed: 8, region: 'East', record: '19-12', kenPomRank: 42, adjOE: 112.2, adjDE: 101.5, tempo: 68.2, conference: 'SEC', injuries: [], momentum: 'cold' },
-  { id: 'tcu', name: 'TCU', seed: 9, region: 'East', record: '20-11', kenPomRank: 38, adjOE: 113.5, adjDE: 102.8, tempo: 69.5, conference: 'Big 12', injuries: [], momentum: 'neutral' },
-  { id: 'nevada', name: 'Nevada', seed: 10, region: 'East', record: '25-6', kenPomRank: 55, adjOE: 112.8, adjDE: 103.5, tempo: 67.8, conference: 'Mountain West', injuries: [], momentum: 'hot' },
-  { id: 'north-texas', name: 'North Texas', seed: 11, region: 'East', record: '27-4', kenPomRank: 62, adjOE: 111.5, adjDE: 104.2, tempo: 62.5, conference: 'American', injuries: [], momentum: 'hot' },
-  { id: 'charleston', name: 'Charleston', seed: 12, region: 'East', record: '26-5', kenPomRank: 78, adjOE: 110.2, adjDE: 105.5, tempo: 68.5, conference: 'CAA', injuries: [], momentum: 'hot' },
-  { id: 'samford', name: 'Samford', seed: 13, region: 'East', record: '25-6', kenPomRank: 85, adjOE: 107.5, adjDE: 106.2, tempo: 71.2, conference: 'Southern', injuries: [], momentum: 'neutral' },
-  { id: 'akron', name: 'Akron', seed: 14, region: 'East', record: '22-9', kenPomRank: 92, adjOE: 105.8, adjDE: 107.5, tempo: 65.8, conference: 'MAC', injuries: [], momentum: 'neutral' },
-  { id: 'longwood', name: 'Longwood', seed: 15, region: 'East', record: '20-12', kenPomRank: 145, adjOE: 101.2, adjDE: 109.2, tempo: 66.5, conference: 'Big South', injuries: [], momentum: 'neutral' },
-  { id: 'wagner', name: 'Wagner', seed: 16, region: 'East', record: '16-14', kenPomRank: 178, adjOE: 97.5, adjDE: 111.5, tempo: 64.2, conference: 'NEC', injuries: [], momentum: 'neutral' },
+  { id: 'duke', name: 'Duke', seed: 1, region: 'East', record: '28-4', kenPomRank: 1, adjOE: 124.5, adjDE: 92.1, tempo: 70.5, conference: 'ACC', injuries: [], momentum: 'hot' },
+  { id: 'uconn', name: 'UConn', seed: 2, region: 'East', record: '27-5', kenPomRank: 8, adjOE: 120.5, adjDE: 96.2, tempo: 68.5, conference: 'Big East', injuries: [], momentum: 'hot' },
+  { id: 'michigan-state', name: 'Michigan State', seed: 3, region: 'East', record: '24-8', kenPomRank: 12, adjOE: 118.8, adjDE: 95.5, tempo: 67.2, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
+  { id: 'kansas', name: 'Kansas', seed: 4, region: 'East', record: '23-9', kenPomRank: 15, adjOE: 117.5, adjDE: 96.8, tempo: 69.2, conference: 'Big 12', injuries: [], momentum: 'neutral' },
+  { id: 'st-johns', name: "St. John's", seed: 5, region: 'East', record: '25-6', kenPomRank: 18, adjOE: 116.5, adjDE: 98.2, tempo: 72.5, conference: 'Big East', injuries: [], momentum: 'hot' },
+  { id: 'louisville', name: 'Louisville', seed: 6, region: 'East', record: '22-10', kenPomRank: 22, adjOE: 115.2, adjDE: 99.5, tempo: 70.8, conference: 'ACC', injuries: [], momentum: 'neutral' },
+  { id: 'ucla', name: 'UCLA', seed: 7, region: 'East', record: '21-11', kenPomRank: 28, adjOE: 113.8, adjDE: 100.2, tempo: 68.2, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
+  { id: 'ohio-state', name: 'Ohio State', seed: 8, region: 'East', record: '20-12', kenPomRank: 32, adjOE: 112.5, adjDE: 101.5, tempo: 69.5, conference: 'Big Ten', injuries: [], momentum: 'cold' },
+  { id: 'tcu', name: 'TCU', seed: 9, region: 'East', record: '21-11', kenPomRank: 35, adjOE: 113.2, adjDE: 102.8, tempo: 70.2, conference: 'Big 12', injuries: [], momentum: 'neutral' },
+  { id: 'ucf', name: 'UCF', seed: 10, region: 'East', record: '23-8', kenPomRank: 42, adjOE: 112.8, adjDE: 103.5, tempo: 71.5, conference: 'Big 12', injuries: [], momentum: 'hot' },
+  { id: 'south-florida', name: 'South Florida', seed: 11, region: 'East', record: '25-7', kenPomRank: 48, adjOE: 111.5, adjDE: 104.2, tempo: 68.8, conference: 'AAC', injuries: [], momentum: 'hot' },
+  { id: 'northern-iowa', name: 'Northern Iowa', seed: 12, region: 'East', record: '26-5', kenPomRank: 55, adjOE: 110.2, adjDE: 105.5, tempo: 66.5, conference: 'MVC', injuries: [], momentum: 'neutral' },
+  { id: 'cal-baptist', name: 'Cal Baptist', seed: 13, region: 'East', record: '24-8', kenPomRank: 68, adjOE: 108.5, adjDE: 106.8, tempo: 67.2, conference: 'WAC', injuries: [], momentum: 'neutral' },
+  { id: 'north-dakota-state', name: 'North Dakota State', seed: 14, region: 'East', record: '22-9', kenPomRank: 78, adjOE: 106.8, adjDE: 108.2, tempo: 65.5, conference: 'Summit', injuries: [], momentum: 'neutral' },
+  { id: 'furman', name: 'Furman', seed: 15, region: 'East', record: '20-12', kenPomRank: 95, adjOE: 104.2, adjDE: 109.5, tempo: 68.5, conference: 'Southern', injuries: [], momentum: 'neutral' },
+  { id: 'siena', name: 'Siena', seed: 16, region: 'East', record: '18-14', kenPomRank: 125, adjOE: 100.5, adjDE: 112.8, tempo: 66.2, conference: 'MAAC', injuries: [], momentum: 'neutral' },
+  
+  // SOUTH REGION
+  { id: 'florida', name: 'Florida', seed: 1, region: 'South', record: '29-4', kenPomRank: 4, adjOE: 122.5, adjDE: 93.2, tempo: 71.2, conference: 'SEC', injuries: [], momentum: 'hot' },
+  { id: 'houston', name: 'Houston', seed: 2, region: 'South', record: '28-5', kenPomRank: 5, adjOE: 121.2, adjDE: 94.8, tempo: 64.5, conference: 'Big 12', injuries: [], momentum: 'hot' },
+  { id: 'illinois', name: 'Illinois', seed: 3, region: 'South', record: '24-8', kenPomRank: 7, adjOE: 119.8, adjDE: 96.5, tempo: 70.8, conference: 'Big Ten', injuries: [], momentum: 'hot' },
+  { id: 'nebraska', name: 'Nebraska', seed: 4, region: 'South', record: '22-10', kenPomRank: 16, adjOE: 116.5, adjDE: 97.2, tempo: 68.5, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
+  { id: 'vanderbilt', name: 'Vanderbilt', seed: 5, region: 'South', record: '23-9', kenPomRank: 20, adjOE: 115.8, adjDE: 98.5, tempo: 69.8, conference: 'SEC', injuries: [], momentum: 'neutral' },
+  { id: 'north-carolina', name: 'North Carolina', seed: 6, region: 'South', record: '21-11', kenPomRank: 24, adjOE: 114.2, adjDE: 99.8, tempo: 70.5, conference: 'ACC', injuries: [], momentum: 'neutral' },
+  { id: 'saint-marys', name: "Saint Mary's", seed: 7, region: 'South', record: '25-6', kenPomRank: 26, adjOE: 113.5, adjDE: 100.5, tempo: 64.2, conference: 'WCC', injuries: [], momentum: 'hot' },
+  { id: 'clemson', name: 'Clemson', seed: 8, region: 'South', record: '20-12', kenPomRank: 34, adjOE: 112.2, adjDE: 101.8, tempo: 67.5, conference: 'ACC', injuries: [], momentum: 'cold' },
+  { id: 'iowa', name: 'Iowa', seed: 9, region: 'South', record: '22-10', kenPomRank: 38, adjOE: 112.8, adjDE: 102.5, tempo: 70.2, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
+  { id: 'texas-am', name: "Texas A&M", seed: 10, region: 'South', record: '20-12', kenPomRank: 44, adjOE: 111.5, adjDE: 103.8, tempo: 68.8, conference: 'SEC', injuries: [], momentum: 'cold' },
+  { id: 'vcu', name: 'VCU', seed: 11, region: 'South', record: '24-7', kenPomRank: 52, adjOE: 110.8, adjDE: 104.5, tempo: 69.5, conference: 'A-10', injuries: [], momentum: 'hot' },
+  { id: 'mcneese', name: 'McNeese', seed: 12, region: 'South', record: '27-4', kenPomRank: 58, adjOE: 109.5, adjDE: 105.8, tempo: 66.8, conference: 'Southland', injuries: [], momentum: 'hot' },
+  { id: 'troy', name: 'Troy', seed: 13, region: 'South', record: '25-6', kenPomRank: 72, adjOE: 107.8, adjDE: 107.2, tempo: 67.5, conference: 'Sun Belt', injuries: [], momentum: 'neutral' },
+  { id: 'penn', name: 'Penn', seed: 14, region: 'South', record: '21-9', kenPomRank: 88, adjOE: 105.2, adjDE: 108.8, tempo: 64.5, conference: 'Ivy', injuries: [], momentum: 'neutral' },
+  { id: 'idaho', name: 'Idaho', seed: 15, region: 'South', record: '19-13', kenPomRank: 115, adjOE: 101.8, adjDE: 111.5, tempo: 65.8, conference: 'Big Sky', injuries: [], momentum: 'neutral' },
+  { id: 'prairie-view', name: 'Prairie View', seed: 16, region: 'South', record: '17-15', kenPomRank: 145, adjOE: 98.5, adjDE: 114.2, tempo: 68.2, conference: 'SWAC', injuries: [], momentum: 'neutral' },
   
   // MIDWEST REGION
-  { id: 'michigan-mw', name: 'Michigan', seed: 1, region: 'Midwest', record: '31-3', kenPomRank: 3, adjOE: 121.8, adjDE: 89.5, tempo: 66.8, conference: 'Big Ten', injuries: ['LJ Cason - out'], momentum: 'hot' },
-  { id: 'tennessee', name: 'Tennessee', seed: 2, region: 'Midwest', record: '26-5', kenPomRank: 10, adjOE: 118.3, adjDE: 94.2, tempo: 65.8, conference: 'SEC', injuries: [], momentum: 'neutral' },
-  { id: 'kentucky', name: 'Kentucky', seed: 3, region: 'Midwest', record: '24-7', kenPomRank: 12, adjOE: 119.2, adjDE: 95.8, tempo: 71.5, conference: 'SEC', injuries: ['Jaxson Robinson - out', 'Kerr Kriisa - out'], momentum: 'neutral' },
-  { id: 'purdue', name: 'Purdue', seed: 4, region: 'Midwest', record: '22-9', kenPomRank: 16, adjOE: 117.5, adjDE: 96.5, tempo: 68.2, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
-  { id: 'wisconsin', name: 'Wisconsin', seed: 5, region: 'Midwest', record: '23-8', kenPomRank: 20, adjOE: 115.2, adjDE: 97.8, tempo: 66.5, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
-  { id: 'illinois', name: 'Illinois', seed: 6, region: 'Midwest', record: '21-10', kenPomRank: 7, adjOE: 122.8, adjDE: 98.5, tempo: 70.2, conference: 'Big Ten', injuries: [], momentum: 'hot' },
-  { id: 'ucla', name: 'UCLA', seed: 7, region: 'Midwest', record: '22-9', kenPomRank: 28, adjOE: 113.5, adjDE: 99.5, tempo: 68.2, conference: 'Big Ten', injuries: ['Tyler Bilodeau - questionable', 'Donovan Dent - questionable'], momentum: 'neutral' },
-  { id: 'utah-st', name: 'Utah State', seed: 8, region: 'Midwest', record: '26-5', kenPomRank: 44, adjOE: 114.2, adjDE: 100.5, tempo: 67.8, conference: 'Mountain West', injuries: [], momentum: 'hot' },
-  { id: 'northwestern', name: 'Northwestern', seed: 9, region: 'Midwest', record: '20-11', kenPomRank: 48, adjOE: 111.8, adjDE: 101.8, tempo: 65.2, conference: 'Big Ten', injuries: [], momentum: 'cold' },
-  { id: 'colorado', name: 'Colorado', seed: 10, region: 'Midwest', record: '22-9', kenPomRank: 51, adjOE: 112.5, adjDE: 102.5, tempo: 68.8, conference: 'Big 12', injuries: [], momentum: 'neutral' },
-  { id: 'oregon', name: 'Oregon', seed: 11, region: 'Midwest', record: '20-12', kenPomRank: 46, adjOE: 111.2, adjDE: 103.8, tempo: 69.2, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
-  { id: 'high-point', name: 'High Point', seed: 12, region: 'Midwest', record: '29-5', kenPomRank: 72, adjOE: 110.2, adjDE: 105.5, tempo: 68.5, conference: 'Big South', injuries: [], momentum: 'hot' },
-  { id: 'hofstra', name: 'Hofstra', seed: 13, region: 'Midwest', record: '25-6', kenPomRank: 82, adjOE: 107.5, adjDE: 106.2, tempo: 71.2, conference: 'CAA', injuries: [], momentum: 'neutral' },
-  { id: 'wright-st', name: 'Wright State', seed: 14, region: 'Midwest', record: '22-9', kenPomRank: 95, adjOE: 105.8, adjDE: 107.5, tempo: 65.8, conference: 'Horizon', injuries: [], momentum: 'neutral' },
-  { id: 'tennessee-st', name: 'Tennessee State', seed: 15, region: 'Midwest', record: '20-12', kenPomRank: 148, adjOE: 102.8, adjDE: 108.5, tempo: 68.5, conference: 'OVC', injuries: [], momentum: 'neutral' },
-  { id: 'howard', name: 'Howard', seed: 16, region: 'Midwest', record: '17-14', kenPomRank: 185, adjOE: 98.5, adjDE: 112.2, tempo: 69.8, conference: 'MEAC', injuries: [], momentum: 'neutral' },
+  { id: 'michigan', name: 'Michigan', seed: 1, region: 'Midwest', record: '30-4', kenPomRank: 2, adjOE: 123.8, adjDE: 90.5, tempo: 67.2, conference: 'Big Ten', injuries: [], momentum: 'hot' },
+  { id: 'auburn', name: 'Auburn', seed: 2, region: 'Midwest', record: '26-6', kenPomRank: 6, adjOE: 120.2, adjDE: 94.8, tempo: 70.5, conference: 'SEC', injuries: [], momentum: 'hot' },
+  { id: 'kentucky', name: 'Kentucky', seed: 3, region: 'Midwest', record: '25-7', kenPomRank: 10, adjOE: 118.5, adjDE: 96.2, tempo: 71.8, conference: 'SEC', injuries: [], momentum: 'neutral' },
+  { id: 'creighton', name: 'Creighton', seed: 4, region: 'Midwest', record: '23-9', kenPomRank: 14, adjOE: 117.2, adjDE: 97.5, tempo: 69.2, conference: 'Big East', injuries: [], momentum: 'neutral' },
+  { id: 'texas-tech', name: 'Texas Tech', seed: 5, region: 'Midwest', record: '24-8', kenPomRank: 17, adjOE: 116.8, adjDE: 98.2, tempo: 66.5, conference: 'Big 12', injuries: [], momentum: 'hot' },
+  { id: 'iowa-state', name: 'Iowa State', seed: 6, region: 'Midwest', record: '22-10', kenPomRank: 21, adjOE: 115.5, adjDE: 99.5, tempo: 65.8, conference: 'Big 12', injuries: [], momentum: 'neutral' },
+  { id: 'oklahoma', name: 'Oklahoma', seed: 7, region: 'Midwest', record: '21-11', kenPomRank: 25, adjOE: 114.2, adjDE: 100.8, tempo: 70.2, conference: 'SEC', injuries: [], momentum: 'cold' },
+  { id: 'alabama', name: 'Alabama', seed: 8, region: 'Midwest', record: '19-13', kenPomRank: 30, adjOE: 113.5, adjDE: 101.5, tempo: 72.5, conference: 'SEC', injuries: [], momentum: 'cold' },
+  { id: 'memphis', name: 'Memphis', seed: 9, region: 'Midwest', record: '23-8', kenPomRank: 36, adjOE: 112.8, adjDE: 102.8, tempo: 71.2, conference: 'AAC', injuries: [], momentum: 'hot' },
+  { id: 'mississippi-state', name: 'Mississippi State', seed: 10, region: 'Midwest', record: '20-12', kenPomRank: 40, adjOE: 111.5, adjDE: 103.5, tempo: 68.8, conference: 'SEC', injuries: [], momentum: 'neutral' },
+  { id: 'miami-oh', name: 'Miami (OH)', seed: 11, region: 'Midwest', record: '26-5', kenPomRank: 50, adjOE: 110.2, adjDE: 105.2, tempo: 67.5, conference: 'MAC', injuries: [], momentum: 'hot' },
+  { id: 'smu', name: 'SMU', seed: 11, region: 'Midwest', record: '22-10', kenPomRank: 46, adjOE: 111.2, adjDE: 104.8, tempo: 70.5, conference: 'ACC', injuries: [], momentum: 'neutral' },
+  { id: 'akron', name: 'Akron', seed: 12, region: 'Midwest', record: '25-6', kenPomRank: 62, adjOE: 109.8, adjDE: 106.5, tempo: 65.2, conference: 'MAC', injuries: [], momentum: 'neutral' },
+  { id: 'james-madison', name: 'James Madison', seed: 13, region: 'Midwest', record: '27-4', kenPomRank: 75, adjOE: 108.2, adjDE: 107.8, tempo: 69.5, conference: 'Sun Belt', injuries: [], momentum: 'hot' },
+  { id: 'vermont', name: 'Vermont', seed: 14, region: 'Midwest', record: '22-9', kenPomRank: 82, adjOE: 106.5, adjDE: 109.2, tempo: 63.8, conference: 'America East', injuries: [], momentum: 'neutral' },
+  { id: 'south-dakota-state', name: 'South Dakota State', seed: 15, region: 'Midwest', record: '20-12', kenPomRank: 105, adjOE: 103.2, adjDE: 111.8, tempo: 68.5, conference: 'Summit', injuries: [], momentum: 'neutral' },
+  { id: 'howard', name: 'Howard', seed: 16, region: 'Midwest', record: '16-15', kenPomRank: 135, adjOE: 99.5, adjDE: 115.2, tempo: 70.8, conference: 'MEAC', injuries: [], momentum: 'neutral' },
+  { id: 'umbc', name: 'UMBC', seed: 16, region: 'Midwest', record: '18-14', kenPomRank: 142, adjOE: 98.8, adjDE: 115.8, tempo: 69.2, conference: 'America East', injuries: [], momentum: 'neutral' },
   
   // WEST REGION
-  { id: 'arizona-w', name: 'Arizona', seed: 1, region: 'West', record: '27-4', kenPomRank: 2, adjOE: 123.5, adjDE: 92.1, tempo: 69.2, conference: 'Big 12', injuries: [], momentum: 'hot' },
-  { id: 'st-johns', name: "St. John's", seed: 2, region: 'West', record: '26-5', kenPomRank: 11, adjOE: 119.8, adjDE: 95.2, tempo: 72.5, conference: 'Big East', injuries: [], momentum: 'hot' },
-  { id: 'texas-tech', name: 'Texas Tech', seed: 3, region: 'West', record: '24-7', kenPomRank: 13, adjOE: 117.2, adjDE: 94.8, tempo: 66.5, conference: 'Big 12', injuries: [], momentum: 'hot' },
-  { id: 'arkansas', name: 'Arkansas', seed: 4, region: 'West', record: '22-9', kenPomRank: 17, adjOE: 116.5, adjDE: 96.2, tempo: 71.5, conference: 'SEC', injuries: [], momentum: 'hot' },
-  { id: 'memphis', name: 'Memphis', seed: 5, region: 'West', record: '23-8', kenPomRank: 21, adjOE: 115.8, adjDE: 97.5, tempo: 73.5, conference: 'American', injuries: ['Tyrese Hunter - questionable'], momentum: 'neutral' },
-  { id: 'missouri', name: 'Missouri', seed: 6, region: 'West', record: '21-10', kenPomRank: 26, adjOE: 114.2, adjDE: 98.8, tempo: 70.5, conference: 'SEC', injuries: [], momentum: 'cold' },
-  { id: 'kansas', name: 'Kansas', seed: 7, region: 'West', record: '20-11', kenPomRank: 23, adjOE: 113.5, adjDE: 99.5, tempo: 68.2, conference: 'Big 12', injuries: [], momentum: 'cold' },
-  { id: 'villanova', name: 'Villanova', seed: 8, region: 'West', record: '22-9', kenPomRank: 33, adjOE: 112.8, adjDE: 100.2, tempo: 69.5, conference: 'Big East', injuries: ['Matt Hodge - out'], momentum: 'neutral' },
-  { id: 'utah-st-w', name: 'Utah State', seed: 9, region: 'West', record: '26-5', kenPomRank: 44, adjOE: 114.2, adjDE: 100.5, tempo: 67.8, conference: 'Mountain West', injuries: [], momentum: 'hot' },
-  { id: 'san-diego-st', name: 'San Diego State', seed: 10, region: 'West', record: '24-7', kenPomRank: 47, adjOE: 112.2, adjDE: 102.8, tempo: 65.5, conference: 'Mountain West', injuries: [], momentum: 'neutral' },
-  { id: 'drake-w', name: 'Drake', seed: 11, region: 'West', record: '27-4', kenPomRank: 52, adjOE: 111.8, adjDE: 103.5, tempo: 66.8, conference: 'Missouri Valley', injuries: [], momentum: 'hot' },
-  { id: 'colorado-st', name: 'Colorado State', seed: 12, region: 'West', record: '24-7', kenPomRank: 56, adjOE: 112.5, adjDE: 104.5, tempo: 66.8, conference: 'Mountain West', injuries: [], momentum: 'neutral' },
-  { id: 'grand-canyon', name: 'Grand Canyon', seed: 13, region: 'West', record: '25-6', kenPomRank: 75, adjOE: 110.2, adjDE: 104.8, tempo: 67.5, conference: 'WAC', injuries: [], momentum: 'hot' },
-  { id: 'princeton', name: 'Princeton', seed: 14, region: 'West', record: '23-7', kenPomRank: 88, adjOE: 107.5, adjDE: 106.2, tempo: 64.8, conference: 'Ivy', injuries: [], momentum: 'neutral' },
-  { id: 'western-ky', name: 'Western Kentucky', seed: 15, region: 'West', record: '19-13', kenPomRank: 105, adjOE: 101.5, adjDE: 110.2, tempo: 70.5, conference: 'C-USA', injuries: [], momentum: 'neutral' },
-  { id: 'long-island', name: 'Long Island', seed: 16, region: 'West', record: '17-14', kenPomRank: 188, adjOE: 98.2, adjDE: 113.5, tempo: 71.8, conference: 'NEC', injuries: [], momentum: 'neutral' },
+  { id: 'arizona', name: 'Arizona', seed: 1, region: 'West', record: '27-4', kenPomRank: 3, adjOE: 122.8, adjDE: 91.8, tempo: 69.5, conference: 'Big 12', injuries: [], momentum: 'hot' },
+  { id: 'purdue', name: 'Purdue', seed: 2, region: 'West', record: '26-6', kenPomRank: 9, adjOE: 119.5, adjDE: 95.5, tempo: 68.2, conference: 'Big Ten', injuries: [], momentum: 'hot' },
+  { id: 'gonzaga', name: 'Gonzaga', seed: 3, region: 'West', record: '25-7', kenPomRank: 11, adjOE: 118.8, adjDE: 96.2, tempo: 71.5, conference: 'WCC', injuries: [], momentum: 'hot' },
+  { id: 'arkansas', name: 'Arkansas', seed: 4, region: 'West', record: '23-9', kenPomRank: 13, adjOE: 117.5, adjDE: 97.8, tempo: 72.2, conference: 'SEC', injuries: [], momentum: 'hot' },
+  { id: 'wisconsin', name: 'Wisconsin', seed: 5, region: 'West', record: '24-8', kenPomRank: 19, adjOE: 116.2, adjDE: 98.5, tempo: 65.8, conference: 'Big Ten', injuries: [], momentum: 'neutral' },
+  { id: 'byu', name: 'BYU', seed: 6, region: 'West', record: '22-10', kenPomRank: 23, adjOE: 115.5, adjDE: 99.8, tempo: 70.8, conference: 'Big 12', injuries: [], momentum: 'neutral' },
+  { id: 'miami', name: 'Miami', seed: 7, region: 'West', record: '21-11', kenPomRank: 27, adjOE: 114.2, adjDE: 100.5, tempo: 69.2, conference: 'ACC', injuries: [], momentum: 'neutral' },
+  { id: 'villanova', name: 'Villanova', seed: 8, region: 'West', record: '20-12', kenPomRank: 33, adjOE: 113.5, adjDE: 101.2, tempo: 68.5, conference: 'Big East', injuries: [], momentum: 'cold' },
+  { id: 'utah-state', name: 'Utah State', seed: 9, region: 'West', record: '25-6', kenPomRank: 37, adjOE: 112.8, adjDE: 102.5, tempo: 67.8, conference: 'Mountain West', injuries: [], momentum: 'hot' },
+  { id: 'missouri', name: 'Missouri', seed: 10, region: 'West', record: '19-13', kenPomRank: 41, adjOE: 111.8, adjDE: 103.8, tempo: 71.5, conference: 'SEC', injuries: [], momentum: 'cold' },
+  { id: 'texas', name: 'Texas', seed: 11, region: 'West', record: '20-12', kenPomRank: 45, adjOE: 111.2, adjDE: 104.2, tempo: 70.2, conference: 'SEC', injuries: [], momentum: 'neutral' },
+  { id: 'nc-state', name: 'NC State', seed: 11, region: 'West', record: '21-11', kenPomRank: 43, adjOE: 111.5, adjDE: 104.5, tempo: 69.8, conference: 'ACC', injuries: [], momentum: 'neutral' },
+  { id: 'high-point', name: 'High Point', seed: 12, region: 'West', record: '28-4', kenPomRank: 65, adjOE: 110.5, adjDE: 106.2, tempo: 68.5, conference: 'Big South', injuries: [], momentum: 'hot' },
+  { id: 'hawaii', name: 'Hawaii', seed: 13, region: 'West', record: '24-7', kenPomRank: 78, adjOE: 108.2, adjDE: 107.8, tempo: 66.2, conference: 'Big West', injuries: [], momentum: 'hot' },
+  { id: 'kennesaw-state', name: 'Kennesaw State', seed: 14, region: 'West', record: '22-9', kenPomRank: 92, adjOE: 106.8, adjDE: 109.5, tempo: 70.5, conference: 'C-USA', injuries: [], momentum: 'neutral' },
+  { id: 'queens', name: 'Queens', seed: 15, region: 'West', record: '19-13', kenPomRank: 118, adjOE: 102.5, adjDE: 112.8, tempo: 71.2, conference: 'ASUN', injuries: [], momentum: 'neutral' },
+  { id: 'long-island', name: 'Long Island', seed: 16, region: 'West', record: '17-14', kenPomRank: 155, adjOE: 99.2, adjDE: 116.5, tempo: 72.8, conference: 'NEC', injuries: [], momentum: 'neutral' },
 ];
-
 // ============================================================================
 // 11. PREDICTION MODEL WEIGHTS (Based on Historical Accuracy)
 // ============================================================================
@@ -383,40 +385,24 @@ export const modelWeights = {
 // ============================================================================
 
 export const championshipFactors = {
-  // Must be top X in both offense and defense
-  dualThreatThreshold: 25,
+  // Minimum KenPom rank to win title (since 2002)
+  minKenPomRank: 25,
   
-  // Champions typically have these characteristics
-  championProfile: {
-    adjOE: { min: 115, ideal: 120 },
-    adjDE: { max: 95, ideal: 92 },
-    tempo: { min: 64, max: 72 },
-    experience: { min: 0.7 }, // 70% upperclassmen
-    depth: { min: 7 }, // 7+ players with significant minutes
-  },
+  // Minimum offensive efficiency
+  minAdjOE: 115,
   
-  // Dark horse indicators (teams that exceed seed expectations)
-  darkHorseIndicators: [
-    'Top 20 KenPom but seed 4+',
-    'Won conference tournament as lower seed',
-    'Key player returning from injury',
-    'Historically strong tournament program',
-    'Elite defense (top 10 adjDE)',
-  ],
+  // Maximum defensive efficiency (lower is better)
+  maxAdjDE: 95,
+  
+  // Conference champions bonus
+  conferenceChampionBonus: 0.05,
+  
+  // Tournament experience bonus (per previous Sweet 16)
+  sweet16ExperienceBonus: 0.02,
 };
 
-// Export all data
-export default {
-  seedVsSeedHistory,
-  seedAdvancementRates,
-  conferenceTournamentPerformance,
-  championBenchmarks,
-  kenpom2025,
-  injuryImpact,
-  coachExperience,
-  momentumWeights,
-  upsetIndicators,
-  tournamentField2025,
-  modelWeights,
-  championshipFactors,
+// Re-export for backward compatibility
+export {
+  seedVsSeedHistory as defaultSeedHistory,
+  modelWeights as defaultWeights,
 };

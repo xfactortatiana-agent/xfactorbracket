@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { tournamentField2025 } from '../data/ultimateDataset';
+import { tournamentField2026 } from '../data/ultimateDataset';
 import { predictWinner, runMonteCarloSimulation, findBestUpsetPicks, calculateChampionshipProbability, type Team, type PredictionFactors } from '../lib/ultimatePredictor';
 import { Trophy, TrendingUp, Zap, Target, BarChart3, Clock, RefreshCw, Download, ChevronRight, Star, Grid3X3, Flame, AlertTriangle, Activity, Crown } from 'lucide-react';
 
@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'bracket' | 'upsets' | 'dna'>('dashboard');
   const [upsetPicks, setUpsetPicks] = useState<ReturnType<typeof findBestUpsetPicks>>([]);
 
-  const teams = tournamentField2025 as CompleteTeam[];
+  const teams = tournamentField2026 as CompleteTeam[];
 
   const strategies = [
     { id: 'chalk', name: 'Chalk', desc: 'All favorites, maximum safety', icon: Target },
@@ -619,23 +619,31 @@ function StatCard({ icon: Icon, label, value, subtext, color }: any) {
 function generateFullBracket(teams: CompleteTeam[], strategy: string): Game[][] {
   const rounds: Game[][] = [[], [], [], [], [], []];
   
-  // First round matchups - NCAA bracket ordering by region
+  // First round matchups - 2026 NCAA bracket
   const regionMatchups: Record<string, string[][]> = {
-    'South': [
-      ['florida', 'southeast-mo'], ['louisville', 'gonzaga'], ['texas-am', 'vermont'], ['michigan', 'mcneese'],
-      ['ole-miss', 'marquette'], ['iowa-st', 'montana'], ['new-mexico', 'drake'], ['houston', 'norfolk-st'],
-    ],
     'East': [
-      ['duke', 'wagner'], ['mississippi-st', 'tcu'], ['baylor', 'akron'], ['clemson', 'charleston'],
-      ['byu', 'dayton'], ['alabama', 'longwood'], ['arizona', 'samford'], ['st-johns', 'long-island'],
+      ['duke', 'siena'], ['ohio-state', 'tcu'],
+      ['st-johns', 'northern-iowa'], ['kansas', 'cal-baptist'],
+      ['louisville', 'south-florida'], ['michigan-state', 'north-dakota-state'],
+      ['ucla', 'ucf'], ['uconn', 'furman'],
+    ],
+    'South': [
+      ['florida', 'prairie-view'], ['clemson', 'iowa'],
+      ['vanderbilt', 'mcneese'], ['nebraska', 'troy'],
+      ['north-carolina', 'vcu'], ['illinois', 'penn'],
+      ['saint-marys', 'texas-am'], ['houston', 'idaho'],
     ],
     'Midwest': [
-      ['michigan-mw', 'howard'], ['utah-st', 'northwestern'], ['purdue', 'wright-st'], ['wisconsin', 'high-point'],
-      ['illinois', 'oregon'], ['kentucky', 'tennessee-st'], ['ucla', 'colorado'], ['tennessee', 'utah-st'],
+      ['michigan', 'howard'], ['alabama', 'memphis'],
+      ['texas-tech', 'akron'], ['creighton', 'james-madison'],
+      ['iowa-state', 'miami-oh'], ['kentucky', 'vermont'],
+      ['oklahoma', 'mississippi-state'], ['auburn', 'south-dakota-state'],
     ],
     'West': [
-      ['arizona-w', 'long-island'], ['villanova', 'utah-st-w'], ['texas-tech', 'western-ky'], ['arkansas', 'princeton'],
-      ['memphis', 'grand-canyon'], ['missouri', 'drake-w'], ['kansas', 'san-diego-st'], ['st-johns', 'longwood'],
+      ['arizona', 'long-island'], ['villanova', 'utah-state'],
+      ['wisconsin', 'high-point'], ['arkansas', 'hawaii'],
+      ['byu', 'texas'], ['gonzaga', 'kennesaw-state'],
+      ['miami', 'missouri'], ['purdue', 'queens'],
     ],
   };
 
