@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getLiveGames, getCompletedGames } from '@/lib/espnApi';
 
+// Force dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // GET /api/live
 export async function GET(request: NextRequest) {
   try {

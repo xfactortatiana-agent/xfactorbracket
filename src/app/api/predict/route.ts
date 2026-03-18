@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { predictHybrid, predictTournamentBatch } from '@/lib/hybridPredictor';
-import { prisma } from '@/lib/dbQueries';
+
+// Force dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // GET /api/predict?team1=duke&team2=arizona
 export async function GET(request: NextRequest) {
