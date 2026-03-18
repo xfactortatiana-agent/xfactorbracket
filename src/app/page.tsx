@@ -64,7 +64,14 @@ export default function Dashboard() {
 
   // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // Initial generation on mount
+    if (fullBracket.length === 0) {
+      generateNewBracket();
+      runSimulation();
+    }
+  }, []);
 
   const generateNewBracket = () => {
     const rounds = generateFullBracket(teams, strategy);
@@ -318,25 +325,34 @@ function DashboardView({
                 <RefreshCw className="w-8 h-8 text-violet-400 animate-spin mb-2" />
                 <span className="text-slate-400 text-sm">Running 500 simulations...</span>
               </div>
+            ) : topContenders.length === 0 ? (
+              <div className="flex flex-col items-center py-8">
+                <span className="text-slate-400 text-sm">No simulation data yet</span>
+              </div>
             ) : (
               <div className="space-y-3">
-                {topContenders.map(({ team, odds }: any, idx: number) => (
-                  <div key={team.id} className="flex items-center gap-3">
-                    <span className={`text-sm font-bold w-6 ${idx === 0 ? 'text-yellow-500' : 'text-slate-500'}`}>#{idx + 1}</span>
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-white text-sm">{team.name}</span>
-                        <span className="text-violet-400 font-semibold">{odds.toFixed(1)}%</span>
-                      </div>
-                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all duration-500" 
-                          style={{ width: `${Math.min(odds * 3, 100)}%` }} 
-                        />
+                {topContenders.map((item: any, idx: number) => {
+                  if (!item) return null;
+                  const { team, odds } = item;
+                  if (!team) return null;
+                  return (
+                    <div key={team.id} className="flex items-center gap-3">
+                      <span className={`text-sm font-bold w-6 ${idx === 0 ? 'text-yellow-500' : 'text-slate-500'}`}>#{idx + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-white text-sm">{team.name}</span>
+                          <span className="text-violet-400 font-semibold">{odds.toFixed(1)}%</span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all duration-500" 
+                            style={{ width: `${Math.min(odds * 3, 100)}%` }} 
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
