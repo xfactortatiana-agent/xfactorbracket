@@ -14,7 +14,9 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "ml:train": "tsx src/scripts/trainModel.ts",
+    "ml:cv": "tsx src/scripts/trainModel.ts cv"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
