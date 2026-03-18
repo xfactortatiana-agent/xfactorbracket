@@ -17,6 +17,11 @@ import {
   conferenceTournamentPerformance,
 } from '../data/ultimateDataset';
 
+import {
+  getTeamByName2026,
+  tournamentTeams2026,
+} from '../data/tournament2026';
+
 // ============================================================================
 // HYBRID PREDICTION ENGINE
 // Combines database historical data + API live data + cache layer
@@ -174,6 +179,12 @@ async function gatherTeamData(
   year: number,
   useLiveData: boolean
 ): Promise<HybridTeamData> {
+  // Get real seed from 2026 tournament data
+  const team2026 = getTeamByName2026(teamId);
+  const actualSeed = team2026?.seed || 8; // Default to 8 if not found
+  const actualName = team2026?.name || teamId;
+  const actualRegion = team2026?.region || '';
+  
   // Parallel fetch from all sources
   const [historical, live, championshipDNA] = await Promise.all([
     // Database queries
@@ -188,9 +199,9 @@ async function gatherTeamData(
   
   return {
     id: teamId,
-    name: teamId, // Will be populated from full team lookup
-    seed: 1,      // Will be populated
-    region: '',
+    name: actualName,
+    seed: actualSeed,
+    region: actualRegion,
     record: '',
     
     historical: historical ? {
