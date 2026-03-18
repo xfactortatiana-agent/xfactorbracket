@@ -1,21 +1,48 @@
 import { PrismaClient } from '@prisma/client';
 
-// Prisma client singleton
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+// Prisma client singleton - lazy initialization to prevent build-time connection
+let prismaClient: PrismaClient | null = null;
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
+export function getPrisma(): PrismaClient {
+  if (!prismaClient) {
+    // Check if DATABASE_URL is available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not set - returning mock client');
+      // Return a mock client for build time
+      return createMockPrisma();
+    }
+    prismaClient = new PrismaClient();
+  }
+  return prismaClient;
 }
+
+// Mock Prisma client for build time
+function createMockPrisma(): PrismaClient {
+  const mockHandler = {
+    get: () => Promise.resolve([]),
+    findMany: () => Promise.resolve([]),
+    findUnique: () => Promise.resolve(null),
+    count: () => Promise.resolve(0),
+    upsert: () => Promise.resolve({}),
+    create: () => Promise.resolve({}),
+    update: () => Promise.resolve({}),
+    delete: () => Promise.resolve({}),
+  };
+  
+  return new Proxy({} as PrismaClient, {
+    get: () => mockHandler,
+  });
+}
+
+// Export for backward compatibility
+export const prisma = getPrisma();
 
 // ============================================================================
 // DATABASE QUERIES FOR PREDICTIONS
 // ============================================================================
 
 export async function getHistoricalMatchupStats(seed1: number, seed2: number) {
+  const prisma = getPrisma();
   const games = await prisma.historicalGame.findMany({
     where: {
       OR: [
@@ -47,6 +74,7 @@ export async function getHistoricalMatchupStats(seed1: number, seed2: number) {
 }
 
 export async function getTeamSeasonHistory(teamName: string, lookback: number = 10) {
+  const prisma = getPrisma();
   const seasons = await prisma.teamSeason.findMany({
     where: {
       teamName: { contains: teamName, mode: 'insensitive' },
@@ -60,12 +88,13 @@ export async function getTeamSeasonHistory(teamName: string, lookback: number = 
     avgTournamentWins: avg(seasons.map(s => s.tournamentWins)),
     finalFours: seasons.filter(s => s.finalFour).length,
     championships: seasons.filter(s => s.championship).length,
-    avgKenPomRank: avg(seasons.map(s => s.kenPomRank).filter(Boolean)),
+    avgKenPomRank: avg(seasons.map(s => s.kenPomRank).filter((v): v is number => v != null)),
     recentForm: seasons.slice(0, 3),
   };
 }
 
 export async function getChampionshipDNAProfile(teamName: string, season: number) {
+  const prisma = getPrisma();
   const team = await prisma.teamSeason.findUnique({
     where: {
       teamName_season: { teamName, season },
@@ -99,35 +128,11 @@ export async function getChampionshipDNAProfile(teamName: string, season: number
       totalImpact,
       critical: injuries.filter(i => i.severity === 'critical').length,
     },
-  };
-}
-
-export async function getUpsetIndicators(seed: number) {
-  // Query historical upsets for this seed line
-  const upsets = await prisma.historicalGame.findMany({
-    where: {
-      OR: [
-        { team1Seed: seed, upset: true },
-        { team2Seed: seed, upset: true },
-      ],
+    dnaMetrics: {
+      kenPomRank: team.kenPomRank || 999,
+      adjustedOffense: team.adjOE || 100,
+      adjustedDefense: team.adjDE || 100,
     },
-  });
-
-  // Common characteristics of upsets for this seed
-  const upsetCharacteristics = await prisma.$queryRaw`
-    SELECT 
-      AVG(CASE WHEN team1_seed < team2_seed THEN team1_ken_pom_rank ELSE team2_ken_pom_rank END) as avg_favorite_kp,
-      AVG(CASE WHEN team1_seed > team2_seed THEN team1_ken_pom_rank ELSE team2_ken_pom_rank END) as avg_underdog_kp,
-      COUNT(*) FILTER (WHERE overtime = true) as overtime_games
-    FROM historical_games
-    WHERE upset = true
-    AND (team1_seed = ${seed} OR team2_seed = ${seed})
-  `;
-
-  return {
-    totalUpsets: upsets.length,
-    upsetRate: upsets.length / await getTotalGamesForSeed(seed),
-    characteristics: upsetCharacteristics,
   };
 }
 
@@ -136,155 +141,176 @@ export async function getUpsetIndicators(seed: number) {
 // ============================================================================
 
 export async function getCachedPrediction(team1Id: string, team2Id: string) {
+  const prisma = getPrisma();
   const cacheKey = `pred:2025:${team1Id}:${team2Id}`;
   
   const cached = await prisma.predictionCache.findUnique({
     where: { cacheKey },
   });
-
+  
   if (!cached || cached.expiresAt < new Date()) {
     return null;
   }
-
-  return {
-    winnerId: cached.winnerId,
-    probability: cached.probability,
-    confidence: cached.confidence,
-    upsetProbability: cached.upsetProbability,
-    factors: cached.factors,
-  };
+  
+  return cached;
 }
 
 export async function cachePrediction(
   team1Id: string,
   team2Id: string,
-  result: {
-    winnerId: string;
-    probability: number;
-    confidence: number;
-    upsetProbability: number;
-    factors: any;
-  }
+  prediction: any
 ) {
+  const prisma = getPrisma();
   const cacheKey = `pred:2025:${team1Id}:${team2Id}`;
   
   await prisma.predictionCache.upsert({
     where: { cacheKey },
     update: {
-      winnerId: result.winnerId,
-      probability: result.probability,
-      confidence: result.confidence,
-      upsetProbability: result.upsetProbability,
-      factors: result.factors,
-      expiresAt: new Date(Date.now() + 3600000), // 1 hour
+      team1Id,
+      team2Id,
+      winnerId: prediction.winnerId,
+      probability: prediction.probability,
+      confidence: prediction.confidence,
+      upsetProbability: prediction.upsetProbability,
+      factors: prediction.factors,
+      expiresAt: new Date(Date.now() + 3600 * 1000), // 1 hour
     },
     create: {
       cacheKey,
       team1Id,
       team2Id,
-      winnerId: result.winnerId,
-      probability: result.probability,
-      confidence: result.confidence,
-      upsetProbability: result.upsetProbability,
-      factors: result.factors,
-      expiresAt: new Date(Date.now() + 3600000),
+      winnerId: prediction.winnerId,
+      probability: prediction.probability,
+      confidence: prediction.confidence,
+      upsetProbability: prediction.upsetProbability,
+      factors: prediction.factors,
+      expiresAt: new Date(Date.now() + 3600 * 1000),
     },
   });
 }
 
-export async function invalidatePredictionCache(teamName?: string) {
-  if (teamName) {
-    // Invalidate all predictions involving this team
-    await prisma.predictionCache.deleteMany({
-      where: {
-        OR: [
-          { team1Id: { contains: teamName } },
-          { team2Id: { contains: teamName } },
-        ],
-      },
-    });
-  } else {
-    // Clear all expired cache
-    await prisma.predictionCache.deleteMany({
-      where: { expiresAt: { lt: new Date() } },
-    });
-  }
+// ============================================================================
+// LIVE GAME DATA
+// ============================================================================
+
+export async function saveLiveGame(gameData: any) {
+  const prisma = getPrisma();
+  return prisma.liveGame.upsert({
+    where: { gameId: gameData.gameId },
+    update: gameData,
+    create: gameData,
+  });
+}
+
+export async function getLiveGamesForUpdate() {
+  const prisma = getPrisma();
+  return prisma.liveGame.findMany({
+    where: {
+      status: { in: ['scheduled', 'live'] },
+    },
+    orderBy: { scheduledAt: 'asc' },
+  });
 }
 
 // ============================================================================
-// SEEDING HISTORICAL DATA
+// USER BRACKET MANAGEMENT
 // ============================================================================
 
-export async function seedHistoricalData(games: any[]) {
-  const batch = games.map(g => prisma.historicalGame.upsert({
-    where: {
-      // Composite key would be better, using id for now
-      id: `${g.year}-${g.round}-${g.team1Name}-${g.team2Name}`,
-    },
-    update: {},
-    create: {
-      year: g.year,
-      round: g.round,
-      region: g.region,
-      team1Seed: g.team1Seed,
-      team1Name: g.team1Name,
-      team1Score: g.team1Score,
-      team2Seed: g.team2Seed,
-      team2Name: g.team2Name,
-      team2Score: g.team2Score,
-      winnerSeed: g.winnerSeed,
-      upset: g.upset,
-      overtime: g.overtime,
-      team1KenPomRank: g.team1KenPomRank,
-      team2KenPomRank: g.team2KenPomRank,
-      team1AdjOE: g.team1AdjOE,
-      team1AdjDE: g.team1AdjDE,
-      team2AdjOE: g.team2AdjOE,
-      team2AdjDE: g.team2AdjDE,
-    },
-  }));
+export async function getUserBracket(userId: string, year: number = 2025) {
+  const prisma = getPrisma();
+  return prisma.userBracket.findFirst({
+    where: { userId, year },
+    orderBy: { updatedAt: 'desc' },
+  });
+}
 
-  return await prisma.$transaction(batch);
+export async function saveUserBracket(userId: string, name: string, bracket: any, year: number = 2025) {
+  const prisma = getPrisma();
+  return prisma.userBracket.upsert({
+    where: { 
+      userId_year_name: { userId, year, name }
+    },
+    update: {
+      picks: bracket,
+      updatedAt: new Date(),
+    },
+    create: {
+      userId,
+      year,
+      name,
+      picks: bracket,
+      strategy: 'balanced',
+    },
+  });
+}
+
+// ============================================================================
+// STATS AND ANALYTICS
+// ============================================================================
+
+export async function getPredictionAccuracy() {
+  const prisma = getPrisma();
+  // Note: This would need a 'verified' field added to the schema
+  // For now, return null
+  return null;
+}
+
+export async function getUpsetHistory(seed1: number, seed2: number) {
+  const prisma = getPrisma();
+  const upsets = await prisma.historicalGame.findMany({
+    where: {
+      OR: [
+        { team1Seed: seed1, team2Seed: seed2, upset: true },
+        { team1Seed: seed2, team2Seed: seed1, upset: true },
+      ],
+    },
+    orderBy: { year: 'desc' },
+    take: 10,
+  });
+  
+  return upsets;
 }
 
 // ============================================================================
 // HELPERS
 // ============================================================================
 
-function calculateAverageMargin(games: any[], targetSeed: number): number {
-  let totalMargin = 0;
-  let count = 0;
-
-  for (const g of games) {
-    if (g.team1Score && g.team2Score) {
-      const margin = g.team1Seed === targetSeed 
-        ? g.team1Score - g.team2Score
-        : g.team2Score - g.team1Score;
-      totalMargin += margin;
-      count++;
-    }
-  }
-
-  return count > 0 ? totalMargin / count : 0;
-}
-
-function getRecentTrend(games: any[], targetSeed: number): 'up' | 'down' | 'flat' {
-  const wins = games.filter(g => g.winnerSeed === targetSeed).length;
-  if (wins >= 4) return 'up';
-  if (wins <= 1) return 'down';
-  return 'flat';
-}
-
-async function getTotalGamesForSeed(seed: number): Promise<number> {
-  const count = await prisma.historicalGame.count({
-    where: {
-      OR: [{ team1Seed: seed }, { team2Seed: seed }],
-    },
+function calculateAverageMargin(games: any[], targetSeed: number) {
+  const margins = games.map(g => {
+    const isTargetTeam1 = g.team1Seed === targetSeed;
+    const targetScore = isTargetTeam1 ? g.team1Score : g.team2Score;
+    const opponentScore = isTargetTeam1 ? g.team2Score : g.team1Score;
+    return targetScore - opponentScore;
   });
-  return count;
+  
+  return avg(margins);
 }
 
-function avg(arr: (number | null | undefined)[]): number {
-  const valid = arr.filter((n): n is number => typeof n === 'number');
-  return valid.length > 0 ? valid.reduce((a, b) => a + b, 0) / valid.length : 0;
+function getRecentTrend(games: any[], targetSeed: number) {
+  const wins = games.filter(g => g.winnerSeed === targetSeed).length;
+  return {
+    wins,
+    losses: games.length - wins,
+    winRate: wins / games.length,
+  };
 }
+
+function avg(arr: number[]): number {
+  if (arr.length === 0) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+export default {
+  getPrisma,
+  getHistoricalMatchupStats,
+  getTeamSeasonHistory,
+  getChampionshipDNAProfile,
+  getCachedPrediction,
+  cachePrediction,
+  saveLiveGame,
+  getLiveGamesForUpdate,
+  getUserBracket,
+  saveUserBracket,
+  getPredictionAccuracy,
+  getUpsetHistory,
+};

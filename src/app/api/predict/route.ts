@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { predictHybrid, predictTournamentBatch } from '@/lib/hybridPredictor';
 
 // Force dynamic to prevent static generation
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
+// Lazy import to prevent build-time issues
+async function getPredictor() {
+  const { predictHybrid, predictTournamentBatch } = await import('@/lib/hybridPredictor');
+  return { predictHybrid, predictTournamentBatch };
+}
 
 // GET /api/predict?team1=duke&team2=arizona
 export async function GET(request: NextRequest) {
@@ -20,6 +25,18 @@ export async function GET(request: NextRequest) {
   }
   
   try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { 
+          error: 'Database not configured',
+          message: 'Please set DATABASE_URL environment variable'
+        },
+        { status: 503 }
+      );
+    }
+    
+    const { predictHybrid } = await getPredictor();
     const prediction = await predictHybrid(team1, team2, { skipCache });
     
     return NextResponse.json({
@@ -31,7 +48,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Prediction error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate prediction' },
+      { error: 'Failed to generate prediction', details: (error as Error).message },
       { status: 500 }
     );
   }
@@ -40,6 +57,17 @@ export async function GET(request: NextRequest) {
 // POST /api/predict (batch predictions)
 export async function POST(request: NextRequest) {
   try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { 
+          error: 'Database not configured',
+          message: 'Please set DATABASE_URL environment variable'
+        },
+        { status: 503 }
+      );
+    }
+    
     const body = await request.json();
     const { matchups, strategy = 'balanced' } = body;
     
@@ -50,6 +78,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    const { predictTournamentBatch } = await getPredictor();
     const predictions = await predictTournamentBatch(matchups);
     
     return NextResponse.json({
@@ -62,7 +91,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Batch prediction error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate batch predictions' },
+      { error: 'Failed to generate batch predictions', details: (error as Error).message },
       { status: 500 }
     );
   }
