@@ -78,7 +78,11 @@ export default function Dashboard() {
 
   const upsetCount = useMemo(() => {
     if (!fullBracket[0]) return 0;
-    return fullBracket[0].filter(g => g.winner && g.winner.seed > Math.min(g.team1.seed, g.team2.seed)).length;
+    return fullBracket[0].filter(g => 
+      g.winner && 
+      g.team1 && g.team2 && 
+      g.winner.seed > Math.min(g.team1.seed, g.team2.seed)
+    ).length;
   }, [fullBracket]);
 
   const avgConfidence = useMemo(() => {
@@ -412,7 +416,7 @@ function BracketView({ fullBracket }: { fullBracket: Game[][] }) {
         {fullBracket.map((round, roundIdx) => (
           <div key={roundIdx} className="flex flex-col justify-center gap-3">
             <h3 className="text-sm font-semibold text-slate-400 text-center mb-2">{roundNames[roundIdx]}</h3>
-            {round.map((game) => (
+            {round.filter(game => game.team1 && game.team2).map((game) => (
               <div 
                 key={game.id} 
                 className="w-44 bg-slate-800 rounded-lg p-2.5 border border-slate-700 hover:border-slate-600 transition-colors"
@@ -422,24 +426,24 @@ function BracketView({ fullBracket }: { fullBracket: Game[][] }) {
                 }}
               >
                 <div className="space-y-0.5">
-                  <div className={`flex items-center justify-between p-1.5 rounded ${game.winner?.id === game.team1.id ? 'bg-violet-500/20' : ''}`}>
+                  <div className={`flex items-center justify-between p-1.5 rounded ${game.winner?.id === game.team1?.id ? 'bg-violet-500/20' : ''}`}>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-slate-500 w-4">{game.team1.seed}</span>
-                      <span className={`text-xs truncate ${game.winner?.id === game.team1.id ? 'text-white font-medium' : 'text-slate-400'}`}>
-                        {game.team1.name}
+                      <span className="text-xs text-slate-500 w-4">{game.team1?.seed}</span>
+                      <span className={`text-xs truncate ${game.winner?.id === game.team1?.id ? 'text-white font-medium' : 'text-slate-400'}`}>
+                        {game.team1?.name || 'TBD'}
                       </span>
                     </div>
-                    {game.winner?.id === game.team1.id && <ChevronRight className="w-3 h-3 text-violet-400" />}
+                    {game.winner?.id === game.team1?.id && <ChevronRight className="w-3 h-3 text-violet-400" />}
                   </div>
                   <div className="h-px bg-slate-700/50" />
-                  <div className={`flex items-center justify-between p-1.5 rounded ${game.winner?.id === game.team2.id ? 'bg-violet-500/20' : ''}`}>
+                  <div className={`flex items-center justify-between p-1.5 rounded ${game.winner?.id === game.team2?.id ? 'bg-violet-500/20' : ''}`}>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-slate-500 w-4">{game.team2.seed}</span>
-                      <span className={`text-xs truncate ${game.winner?.id === game.team2.id ? 'text-white font-medium' : 'text-slate-400'}`}>
-                        {game.team2.name}
+                      <span className="text-xs text-slate-500 w-4">{game.team2?.seed}</span>
+                      <span className={`text-xs truncate ${game.winner?.id === game.team2?.id ? 'text-white font-medium' : 'text-slate-400'}`}>
+                        {game.team2?.name || 'TBD'}
                       </span>
                     </div>
-                    {game.winner?.id === game.team2.id && <ChevronRight className="w-3 h-3 text-violet-400" />}
+                    {game.winner?.id === game.team2?.id && <ChevronRight className="w-3 h-3 text-violet-400" />}
                   </div>
                 </div>
                 <div className="mt-1.5 text-xs text-slate-500 text-center">
@@ -652,6 +656,13 @@ function generateFullBracket(teams: CompleteTeam[], strategy: string): Game[][] 
     matchups.forEach(([t1id, t2id], idx) => {
       const team1 = teams.find(t => t.id === t1id);
       const team2 = teams.find(t => t.id === t2id);
+      
+      if (!team1) {
+        console.error(`Team not found: ${t1id}`);
+      }
+      if (!team2) {
+        console.error(`Team not found: ${t2id}`);
+      }
       
       if (team1 && team2) {
         const result = predictWinner(team1, team2);
