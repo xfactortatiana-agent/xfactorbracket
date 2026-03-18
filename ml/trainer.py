@@ -182,7 +182,6 @@ class MarchMadnessTrainer:
         model.fit(
             X_train, y_train,
             eval_set=[(X_test, y_test)],
-            early_stopping_rounds=50,
             verbose=False
         )
         
@@ -210,7 +209,7 @@ class MarchMadnessTrainer:
             'test_accuracy': float(test_acc),
             'log_loss': float(log_loss),
             'feature_importance': importance.tolist(),
-            'best_iteration': model.best_iteration
+            'best_iteration': model.best_iteration if hasattr(model, 'best_iteration') else self.config.n_estimators
         }
     
     def train_ensemble(self, X: np.ndarray, y: np.ndarray) -> Dict[str, Any]:
@@ -409,6 +408,12 @@ def main():
         # Train XGBoost
         result = trainer.train_xgboost(X, y)
         print(json.dumps(result, indent=2))
+        
+        # Save model
+        import pickle
+        with open('model_xgboost.pkl', 'wb') as f:
+            pickle.dump(trainer.models['xgboost'], f)
+        print('\n✅ Model saved: model_xgboost.pkl')
         
     elif command == 'cross_validate':
         games = data.get('games', [])
