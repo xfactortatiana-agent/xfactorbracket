@@ -48,7 +48,10 @@ export default function Dashboard() {
   useEffect(() => {
     generateNewBracket();
     runSimulation();
-    setUpsetPicks(findBestUpsetPicks(teams));
+    // Make upset calculation non-blocking
+    setTimeout(() => {
+      setUpsetPicks(findBestUpsetPicks(teams));
+    }, 50);
   }, [strategy]);
 
   const generateNewBracket = () => {
@@ -59,10 +62,12 @@ export default function Dashboard() {
 
   const runSimulation = async () => {
     setIsSimulating(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const odds = runMonteCarloSimulation(teams, 5000);
-    setChampionshipOdds(odds);
-    setIsSimulating(false);
+    // Use setTimeout to make it non-blocking
+    setTimeout(() => {
+      const odds = runMonteCarloSimulation(teams, 1000); // Reduced from 5000 to 1000 for performance
+      setChampionshipOdds(odds);
+      setIsSimulating(false);
+    }, 100);
   };
 
   const topContenders = useMemo(() => {
@@ -277,7 +282,7 @@ function DashboardView({
             {isSimulating ? (
               <div className="flex flex-col items-center py-8">
                 <RefreshCw className="w-8 h-8 text-violet-400 animate-spin mb-2" />
-                <span className="text-slate-400 text-sm">Running 5,000 simulations...</span>
+                <span className="text-slate-400 text-sm">Running 1,000 simulations...</span>
               </div>
             ) : (
               <div className="space-y-3">
