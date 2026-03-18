@@ -66,8 +66,8 @@ export function predictWinner(team1: Team, team2: Team): {
   const factors = calculateFactors(team1, team2);
   
   // Calculate weighted score for each team
-  const team1Score = calculateTeamScore(team1, team2, factors);
-  const team2Score = calculateTeamScore(team2, team1, factors);
+  const team1Score = calculateTeamScore(team1, team2, factors, true);
+  const team2Score = calculateTeamScore(team2, team1, factors, false);
   
   const totalScore = team1Score + team2Score;
   const team1Prob = team1Score / totalScore;
@@ -281,17 +281,21 @@ function calculateUpsetRisk(team1: Team, team2: Team): number {
 function calculateTeamScore(
   team: Team,
   opponent: Team,
-  factors: PredictionFactors
+  factors: PredictionFactors,
+  isTeam1: boolean
 ): number {
   let score = 0.5; // Base score
   
+  // If this is team2, invert all factors (they were calculated from team1's perspective)
+  const multiplier = isTeam1 ? 1 : -1;
+  
   // Apply weighted factors
-  score += factors.seedAdvantage * modelWeights.seedHistory;
-  score += factors.kenPomAdvantage * modelWeights.kenPom;
-  score += factors.conferenceStrength * modelWeights.conference;
-  score += factors.injuryImpact * modelWeights.injuries;
-  score += factors.momentumBonus * modelWeights.momentum;
-  score += factors.upsetRisk * modelWeights.upsetFactors;
+  score += (factors.seedAdvantage * multiplier) * modelWeights.seedHistory;
+  score += (factors.kenPomAdvantage * multiplier) * modelWeights.kenPom;
+  score += (factors.conferenceStrength * multiplier) * modelWeights.conference;
+  score += (factors.injuryImpact * multiplier) * modelWeights.injuries;
+  score += (factors.momentumBonus * multiplier) * modelWeights.momentum;
+  score += (factors.upsetRisk * multiplier) * modelWeights.upsetFactors;
   
   // Ensure score is positive
   return Math.max(0.1, score);
