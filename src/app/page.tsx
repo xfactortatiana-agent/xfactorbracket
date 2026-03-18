@@ -42,7 +42,10 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'bracket' | 'upsets' | 'dna' | 'barttorvik'>('dashboard');
   const [upsetPicks, setUpsetPicks] = useState<ReturnType<typeof findBestUpsetPicks>>([]);
 
-  const teams = tournamentField2026 as CompleteTeam[];
+  // Filter to 64 teams (exclude First Four play-in teams)
+  // First Four: Lehigh/Prairie View, Howard/UMBC, SMU/Miami OH, Texas/NC State
+  const firstFourLosers = ['lehigh', 'howard', 'smu', 'texas']; // Assume these lose play-in
+  const teams = (tournamentField2026 as CompleteTeam[]).filter(t => !firstFourLosers.includes(t.id));
 
   const strategies = [
     { id: 'chalk', name: 'Chalk', desc: 'All favorites, maximum safety', icon: Target },
