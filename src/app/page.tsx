@@ -197,6 +197,7 @@ export default function Dashboard() {
             lastUpdated={lastUpdated}
             upsetCount={upsetCount}
             avgConfidence={avgConfidence}
+            mounted={mounted}
           />
         )}
         {viewMode === 'bracket' && <BracketView fullBracket={fullBracket} />}
@@ -233,7 +234,8 @@ function DashboardView({
   firstRound,
   lastUpdated,
   upsetCount,
-  avgConfidence
+  avgConfidence,
+  mounted
 }: any) {
   return (
     <>
@@ -263,7 +265,7 @@ function DashboardView({
         <StatCard 
           icon={Clock} 
           label="Updated" 
-          value={lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
+          value={mounted ? lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'} 
           subtext="Real-time data"
           color="emerald"
         />
@@ -351,7 +353,8 @@ function DashboardView({
             {firstRound.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {firstRound.map((game: Game) => {
-                  const isUpset = game.winner && game.winner.seed > Math.min(game.team1.seed, game.team2.seed);
+                  if (!game.team1 || !game.team2 || !game.winner) return null;
+                  const isUpset = game.winner.seed > Math.min(game.team1.seed, game.team2.seed);
                   const favorite = game.team1.seed < game.team2.seed ? game.team1 : game.team2;
                   const underdog = game.team1.seed < game.team2.seed ? game.team2 : game.team1;
                   
