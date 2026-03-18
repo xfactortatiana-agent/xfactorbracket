@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Historical tournament games (1985-present)
+model HistoricalGame {
+  id              String   @id @default(uuid())
+  year            Int
+  round           String   // R64, R32, S16, E8, F4, Championship
+  region          String?
+  team1Seed       Int
+  team1Name       String
+  team1Score      Int?
+  team2Seed       Int
+  team2Name       String
+  team2Score      Int?
+  winnerSeed      Int?
+  upset           Boolean  @default(false)
+  overtime        Boolean  @default(false)
+  
+  // Advanced metrics (when available)
+  team1KenPomRank Int?
+  team2KenPomRank Int?
+  team1AdjOE      Float?
+  team1AdjDE      Float?
+  team2AdjOE      Float?
+  team2AdjDE      Float?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([year])
+  @@index([team1Seed, team2Seed])
+  @@index([upset])
+}
+
+// Team metrics by season
+model TeamSeason {
+  id            String   @id @default(uuid())
+  teamName      String
+  season        Int
+  
+  // Basic info
+  conference    String?
+  tournamentSeed Int?
+  record        String?
+  
+  // KenPom metrics
+  kenPomRank    Int?
+  adjOE         Float?   // Adjusted offensive efficiency
+  adjDE         Float?   // Adjusted defensive efficiency
+  adjTempo      Float?
+  luck          Float?
+  sos           Float?   // Strength of schedule
+  
+  // Historical performance
+  madeTournament Boolean @default(false)
+  tournamentWins Int     @default(0)
+  finalFour      Boolean @default(false)
+  championship   Boolean @default(false)
+  
+  // Pre-tournament momentum
+  last10Record   String?
+  confTournamentResult String?
+  
+  createdAt     DateTime @default(now())
+  
+  @@unique([teamName, season])
+  @@index([season])
+  @@index([kenPomRank])
+}
+
+// Player injuries
+model Injury {
+  id          String   @id @default(uuid())
+  playerName  String
+  teamName    String
+  season      Int
+  
+  injuryType  String   // out, questionable, probable, returning
+  severity    String   // critical, major, moderate, minor
+  description String?
+  
+  reportedAt  DateTime @default(now())
+  expectedReturn DateTime?
+  
+  // Impact on team (computed)
+  impactScore Float?   // -0.15 to 0
+  
+  @@index([teamName, season])
+  @@index([injuryType])
+}
+
+// Live game data (updated during tournament)
+model LiveGame {
+  id            String   @id @default(uuid())
+  gameId        String   @unique // External API ID
+  
+  year          Int
+  round         String
+  scheduledAt   DateTime
+  
+  team1Id       String
+  team1Name     String
+  team1Seed     Int
+  team1Score    Int      @default(0)
+  
+  team2Id       String
+  team2Name     String
+  team2Seed     Int
+  team2Score    Int      @default(0)
+  
+  status        String   // scheduled, live, final
+  timeRemaining String?
+  possession    String?
+  
+  winner        String?  // team ID when final
+  
+  updatedAt     DateTime @updatedAt
+  
+  @@index([status])
+  @@index([year, round])
+}
+
+// Cached predictions (invalidated when data changes)
+model PredictionCache {
+  id            String   @id @default(uuid())
+  cacheKey      String   @unique
+  
+  team1Id       String
+  team2Id       String
+  winnerId      String
+  probability   Float
+  confidence    Float
+  upsetProbability Float
+  
+  factors       Json     // PredictionFactors object
+  
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+  
+  @@index([expiresAt])
+}
+
+// User brackets (for pool management)
+model UserBracket {
+  id          String   @id @default(uuid())
+  userId      String
+  year        Int
+  name        String
+  
+  picks       Json     // Array of game predictions
+  score       Int      @default(0)
+  maxPossible Int      @default(0)
+  rank        Int?
+  
+  strategy    String   // chalk, balanced, aggressive
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([userId, year, name])
+  @@index([year, score])
+}
+
+// Data sync logs
+model DataSync {
+  id          String   @id @default(uuid())
+  source      String   // espn, kenpom, manual
+  dataType    String   // games, scores, injuries, metrics
+  recordsCount Int
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  status      String   // running, success, failed
+  error       String?
+}
