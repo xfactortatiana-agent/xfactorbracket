@@ -74,18 +74,31 @@ export default function Dashboard() {
   }, []);
 
   const generateNewBracket = () => {
+    if (!teams || teams.length === 0) {
+      console.error('No teams available for bracket generation');
+      return;
+    }
     const rounds = generateFullBracket(teams, strategy);
     setFullBracket(rounds);
     setLastUpdated(new Date());
   };
 
   const runSimulation = async () => {
+    if (!teams || teams.length === 0) {
+      console.error('No teams available for simulation');
+      return;
+    }
     setIsSimulating(true);
     // Use requestAnimationFrame pattern for non-blocking
     requestAnimationFrame(() => {
-      const odds = runMonteCarloSimulation(teams, 500); // Further reduced for speed
-      setChampionshipOdds(odds);
-      setIsSimulating(false);
+      try {
+        const odds = runMonteCarloSimulation(teams, 500);
+        setChampionshipOdds(odds);
+      } catch (err) {
+        console.error('Simulation error:', err);
+      } finally {
+        setIsSimulating(false);
+      }
     });
   };
 

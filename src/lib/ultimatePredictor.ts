@@ -493,8 +493,20 @@ export function runMonteCarloSimulation(
 }
 
 function simulateTournament(teams: Team[]): Team {
+  // Validate input
+  if (!teams || teams.length === 0) {
+    throw new Error('No teams provided for simulation');
+  }
+  
+  // Filter out any undefined/null teams
+  const validTeams = teams.filter(t => t && t.id && typeof t.seed === 'number');
+  
+  if (validTeams.length !== 64) {
+    console.warn(`Expected 64 teams for simulation, got ${validTeams.length}`);
+  }
+  
   // Simulate each round
-  let currentTeams = [...teams];
+  let currentTeams = [...validTeams];
   
   for (let round = 1; round <= 6; round++) {
     const nextRound: Team[] = [];
@@ -502,6 +514,21 @@ function simulateTournament(teams: Team[]): Team {
     for (let i = 0; i < currentTeams.length; i += 2) {
       const team1 = currentTeams[i];
       const team2 = currentTeams[i + 1];
+      
+      // Safety check - both teams must exist
+      if (!team1 || !team2) {
+        console.error(`Missing team in round ${round}, game ${i/2 + 1}`);
+        // Push the existing team or a placeholder
+        nextRound.push(team1 || team2);
+        continue;
+      }
+      
+      // Extra safety - ensure both teams have seed property
+      if (typeof team1.seed !== 'number' || typeof team2.seed !== 'number') {
+        console.error('Team missing seed property:', team1, team2);
+        nextRound.push(team1);
+        continue;
+      }
       
       const result = predictWinner(team1, team2);
       
