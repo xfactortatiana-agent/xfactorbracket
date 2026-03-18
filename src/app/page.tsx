@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { tournamentField2026 } from '../data/ultimateDataset';
 import { predictWinner, runMonteCarloSimulation, findBestUpsetPicks, calculateChampionshipProbability, type Team, type PredictionFactors } from '../lib/ultimatePredictor';
-import { Trophy, TrendingUp, Zap, Target, BarChart3, Clock, RefreshCw, Download, ChevronRight, Star, Grid3X3, Flame, AlertTriangle, Activity, Crown } from 'lucide-react';
+import { predictWithBarttorvik, simulateTournament, type BarttorvikPrediction } from '../lib/barttorvikPredictor';
+import { getBarttorvikData, getTopTeams } from '../data/barttorvik2026';
+import { Trophy, TrendingUp, Zap, Target, BarChart3, Clock, RefreshCw, Download, ChevronRight, Star, Grid3X3, Flame, AlertTriangle, Activity, Crown, Beaker } from 'lucide-react';
 
 // Type for the complete team data from ultimateDataset
 interface CompleteTeam extends Team {
@@ -26,15 +28,18 @@ interface Game {
   confidence: number;
   upsetProbability: number;
   predictionFactors: PredictionFactors;
+  barttorvik?: BarttorvikPrediction;
 }
 
 export default function Dashboard() {
   const [strategy, setStrategy] = useState('balanced');
+  const [useBarttorvik, setUseBarttorvik] = useState(true);
   const [fullBracket, setFullBracket] = useState<Game[][]>([]);
+  const [barttorvikBracket, setBarttorvikBracket] = useState<ReturnType<typeof simulateTournament> | null>(null);
   const [championshipOdds, setChampionshipOdds] = useState<Map<string, number>>(new Map());
   const [isSimulating, setIsSimulating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'dashboard' | 'bracket' | 'upsets' | 'dna'>('dashboard');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'bracket' | 'upsets' | 'dna' | 'barttorvik'>('dashboard');
   const [upsetPicks, setUpsetPicks] = useState<ReturnType<typeof findBestUpsetPicks>>([]);
 
   const teams = tournamentField2026 as CompleteTeam[];
@@ -157,6 +162,12 @@ export default function Dashboard() {
                 icon={Activity}
                 label="Championship DNA"
               />
+              <NavButton 
+                active={viewMode === 'barttorvik'} 
+                onClick={() => setViewMode('barttorvik')}
+                icon={Beaker}
+                label="Barttorvik"
+              />
               <div className="w-px h-8 bg-slate-700 mx-2" />
               <button 
                 onClick={() => { generateNewBracket(); runSimulation(); }}
@@ -191,6 +202,7 @@ export default function Dashboard() {
         {viewMode === 'bracket' && <BracketView fullBracket={fullBracket} />}
         {viewMode === 'upsets' && <UpsetsView upsetPicks={upsetPicks} />}
         {viewMode === 'dna' && <ChampionshipDnaView teams={teams} />}
+        {viewMode === 'barttorvik' && <BarttorvikView teams={teams} />}
       </main>
     </div>
   );
@@ -614,6 +626,75 @@ function ChampionshipDnaView({ teams }: { teams: CompleteTeam[] }) {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function BarttorvikView({ teams }: { teams: CompleteTeam[] }) {
+  const topTeams = getTopTeams(16);
+  
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-xl p-6">
+        <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+          <Beaker className="w-6 h-6 text-emerald-500" />
+          Barttorvik Neutral Court Ratings
+        </h2>
+        <p className="text-slate-400">
+          Using Barthag (win probability vs average team) with neutral court adjusted efficiencies.
+          Formula: Log5 for head-to-head probability + efficiency margin adjustments.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Top 16 by Barthag</h3>
+          <div className="space-y-2">
+            {topTeams.map((team, idx) => (
+              <div key={team.team} className="flex items-center gap-3 p-2 bg-slate-800/50 rounded-lg">
+                <span className={`text-sm font-bold w-6 ${idx < 4 ? 'text-emerald-400' : 'text-slate-500'}`}>#{idx + 1}</span>
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <span className="text-white text-sm">{team.team}</span>
+                    <span className="text-emerald-400 font-semibold">{(team.barthag * 100).toFixed(1)}%</span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {team.record} • {team.conference} • {team.wab.toFixed(1)} WAB
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Tournament Teams Metrics</h3>
+          <div className="space-y-3">
+            {teams.slice(0, 10).map(team => {
+              const bt = getBarttorvikData(team.name);
+              if (!bt) return null;
+              return (
+                <div key={team.id} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+                  <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center text-emerald-400 font-bold">
+                    {team.seed}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <span className="text-white font-medium">{team.name}</span>
+                      <span className="text-emerald-400">{(bt.barthag * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mt-1 text-xs">
+                      <div className="text-slate-500">OE: <span className="text-slate-300">{bt.adjOE.toFixed(1)}</span></div>
+                      <div className="text-slate-500">DE: <span className="text-slate-300">{bt.adjDE.toFixed(1)}</span></div>
+                      <div className="text-slate-500">eFG: <span className="text-slate-300">{bt.efgPct.toFixed(1)}%</span></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>        
+        </div>
       </div>
     </div>
   );
