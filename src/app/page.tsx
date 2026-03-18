@@ -47,11 +47,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     generateNewBracket();
-    runSimulation();
-    // Make upset calculation non-blocking
+    // Stagger expensive calculations
+    requestAnimationFrame(() => {
+      runSimulation();
+    });
+    // Delay upset calculation even more
     setTimeout(() => {
       setUpsetPicks(findBestUpsetPicks(teams));
-    }, 50);
+    }, 500);
   }, [strategy]);
 
   const generateNewBracket = () => {
@@ -62,12 +65,12 @@ export default function Dashboard() {
 
   const runSimulation = async () => {
     setIsSimulating(true);
-    // Use setTimeout to make it non-blocking
-    setTimeout(() => {
-      const odds = runMonteCarloSimulation(teams, 1000); // Reduced from 5000 to 1000 for performance
+    // Use requestAnimationFrame pattern for non-blocking
+    requestAnimationFrame(() => {
+      const odds = runMonteCarloSimulation(teams, 500); // Further reduced for speed
       setChampionshipOdds(odds);
       setIsSimulating(false);
-    }, 100);
+    });
   };
 
   const topContenders = useMemo(() => {
@@ -282,7 +285,7 @@ function DashboardView({
             {isSimulating ? (
               <div className="flex flex-col items-center py-8">
                 <RefreshCw className="w-8 h-8 text-violet-400 animate-spin mb-2" />
-                <span className="text-slate-400 text-sm">Running 1,000 simulations...</span>
+                <span className="text-slate-400 text-sm">Running 500 simulations...</span>
               </div>
             ) : (
               <div className="space-y-3">
@@ -675,9 +678,25 @@ function generateFullBracket(teams: CompleteTeam[], strategy: string): Game[][] 
         // Apply strategy
         let winner = result.winner;
         if (strategy === 'chalk') {
+          // Always pick the higher seed
           winner = team1.seed < team2.seed ? team1 : team2;
-        } else if (strategy === 'aggressive' && result.upsetProbability > 0.3) {
-          if (Math.random() < 0.35) {
+        } else if (strategy === 'balanced') {
+          // REALISTIC upset picks based on historical rates
+          const seedDiff = Math.abs(team1.seed - team2.seed);
+          const isCloseGame = seedDiff <= 4; // 8/9, 7/10, 6/11, 5/12
+          
+          if (isCloseGame) {
+            // For close games, use calculated upset probability
+            // Historical: 8/9 = 48%, 7/10 = 35%, 6/11 = 39%, 5/12 = 28%
+            const upsetThreshold = result.upsetProbability;
+            if (Math.random() < upsetThreshold) {
+              // Pick the upset!
+              winner = result.winner.id === team1.id ? team2 : team1;
+            }
+          }
+        } else if (strategy === 'aggressive') {
+          // More willing to pick upsets in any game
+          if (result.upsetProbability > 0.2 && Math.random() < 0.5) {
             winner = result.winner.id === team1.id ? team2 : team1;
           }
         }

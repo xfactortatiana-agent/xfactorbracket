@@ -113,10 +113,12 @@ function calculateFactors(team1: Team, team2: Team): PredictionFactors {
 // ============================================================================
 // SEED HISTORICAL ADVANTAGE (25% weight)
 // Uses 40 years of historical seed vs seed data
+// REDUCED for close matchups to allow more realistic upsets
 // ============================================================================
 
 function calculateSeedAdvantage(team1: Team, team2: Team): number {
   const seedDiff = team2.seed - team1.seed;
+  const absDiff = Math.abs(seedDiff);
   
   // Look up historical win rate for this seed matchup
   const matchupKey = `${team1.seed}v${team2.seed}`;
@@ -125,30 +127,39 @@ function calculateSeedAdvantage(team1: Team, team2: Team): number {
   const historical = seedVsSeedHistory[matchupKey];
   const reverseHistorical = seedVsSeedHistory[reverseKey];
   
+  let advantage = 0;
+  
   if (historical) {
-    return (historical.winPct - 0.5) * 2; // Normalize to -1 to 1
+    advantage = (historical.winPct - 0.5) * 2;
+  } else if (reverseHistorical) {
+    advantage = -(reverseHistorical.winPct - 0.5) * 2;
+  } else {
+    // Fallback based on seed difference with DAMPENED values for close games
+    const seedAdvantageMap: Record<number, number> = {
+      15: 0.97,  // 1 vs 16 (unchanged - nearly impossible)
+      13: 0.90,  // 1 vs 14, 2 vs 15 (reduced from 0.86)
+      11: 0.75,  // 1 vs 12, 3 vs 14 (reduced from 0.79)
+      9: 0.55,   // 1 vs 10, 2 vs 11 (reduced from 0.64)
+      7: 0.45,   // 2 vs 9, 3 vs 10, 5 vs 12 (reduced from 0.61) - 12v5 is 36% upsets!
+      5: 0.30,   // 1 vs 6, 3 vs 8, 4 vs 9 (reduced from 0.51)
+      4: 0.20,   // 4 vs 8, 5 vs 9
+      3: 0.15,   // 3 vs 6, 4 vs 7, 5 vs 8 (reduced from 0.39)
+      2: 0.08,   // 6 vs 8, 7 vs 9
+      1: 0.02,   // 8 vs 9 (true coin flip)
+      0: 0,
+    };
+    
+    const baseAdvantage = seedAdvantageMap[absDiff] || 0.15;
+    advantage = seedDiff > 0 ? baseAdvantage : -baseAdvantage;
   }
   
-  if (reverseHistorical) {
-    return -(reverseHistorical.winPct - 0.5) * 2;
+  // DAMPEN seed advantage for close matchups (seed diff <= 5)
+  // Let KenPom and momentum matter more
+  if (absDiff <= 5) {
+    advantage *= 0.6; // Reduce seed advantage by 40%
   }
   
-  // Fallback: General seed advantage formula based on historical data
-  const seedAdvantageMap: Record<number, number> = {
-    15: 0.97,  // 1 vs 16
-    13: 0.86,  // 1 vs 14, 2 vs 15
-    11: 0.79,  // 1 vs 12, 3 vs 14
-    9: 0.64,   // 1 vs 10, 2 vs 11, 4 vs 13
-    7: 0.61,   // 2 vs 9, 3 vs 10, 5 vs 12
-    5: 0.51,   // 1 vs 6, 3 vs 8, 4 vs 9
-    3: 0.39,   // 3 vs 6, 4 vs 7, 5 vs 8
-    1: 0.02,   // 8 vs 9
-    0: 0,
-  };
-  
-  const absDiff = Math.abs(seedDiff);
-  const baseAdvantage = seedAdvantageMap[absDiff] || 0.2;
-  return seedDiff > 0 ? baseAdvantage : -baseAdvantage;
+  return advantage;
 }
 
 // ============================================================================
@@ -243,7 +254,7 @@ function calculateMomentumBonus(team1: Team, team2: Team): number {
 }
 
 // ============================================================================
-// UPSET RISK CALCULATION (10% weight)
+// UPSET RISK CALCULATION (15% weight - INCREASED from 10%)
 // Detects when lower seed has upset potential
 // ============================================================================
 
@@ -254,23 +265,66 @@ function calculateUpsetRisk(team1: Team, team2: Team): number {
   const seedDiff = lowerSeed.seed - higherSeed.seed;
   let upsetRisk = 0;
   
-  // Check for specific upset scenarios
-  if (seedDiff === 7) { // 12 vs 5, 8 vs 1
-    const indicators = upsetIndicators['12v5'];
-    // Check if lower seed has upset indicators
-    if (lowerSeed.adjOE && lowerSeed.adjDE) {
-      const margin = lowerSeed.adjOE - lowerSeed.adjDE;
-      if (margin > 15) upsetRisk += indicators.highVolumeRebounding;
+  // HISTORICAL UPSET RATES - use these as base probabilities
+  const historicalUpsetRates: Record<number, number> = {
+    1: 0.48,  // 8/9 games: 48% upset rate
+    2: 0.35,  // 7/10 games: 35% upset rate  
+    3: 0.39,  // 6/11 games: 39% upset rate
+    4: 0.28,  // 5/12 games: 28% upset rate (famous 12-over-5)
+    5: 0.25,  // 4/13 games: 25% upset rate
+    7: 0.15,  // 2/9, 3/10: 15% upset rate
+  };
+  
+  // Base upset probability from historical data
+  const baseUpsetRate = historicalUpsetRates[seedDiff] || 0.1;
+  upsetRisk += baseUpsetRate;
+  
+  // ADJUST based on team factors
+  
+  // 1. KenPom efficiency - if lower seed is actually better, huge upset boost
+  if (lowerSeed.kenPomRank && higherSeed.kenPomRank) {
+    if (lowerSeed.kenPomRank < higherSeed.kenPomRank) {
+      // Lower seed is ranked HIGHER in KenPom (better team)
+      upsetRisk += 0.25;
     }
-  } else if (seedDiff === 5) { // 11 vs 6
-    const indicators = upsetIndicators['11v6'];
-    if (lowerSeed.momentum === 'hot') upsetRisk += indicators.starPlayer;
-  } else if (seedDiff === 3) { // 10 vs 7
-    const indicators = upsetIndicators['10v7'];
-    upsetRisk += indicators.balancedScoring;
   }
   
-  // If team1 is the lower seed, return positive upset risk
+  // 2. Efficiency margin - if underdog has better adjOE - adjDE
+  const lowerMargin = (lowerSeed.adjOE || 110) - (lowerSeed.adjDE || 100);
+  const higherMargin = (higherSeed.adjOE || 110) - (higherSeed.adjDE || 100);
+  if (lowerMargin > higherMargin + 5) {
+    upsetRisk += 0.15;
+  }
+  
+  // 3. Momentum - hot underdogs are dangerous
+  if (lowerSeed.momentum === 'hot') {
+    upsetRisk += 0.12;
+  }
+  if (higherSeed.momentum === 'cold') {
+    upsetRisk += 0.08;
+  }
+  
+  // 4. Specific upset indicators by matchup
+  if (seedDiff === 4) { // 12 vs 5
+    const indicators = upsetIndicators['12v5'];
+    if (lowerSeed.adjOE && lowerSeed.adjDE) {
+      const margin = lowerSeed.adjOE - lowerSeed.adjDE;
+      if (margin > 10) upsetRisk += 0.1;
+    }
+    // Check if 12-seed is from a good conference
+    if (['Missouri Valley', 'Mountain West', 'WCC', 'A-10'].includes(lowerSeed.conference || '')) {
+      upsetRisk += 0.05;
+    }
+  } else if (seedDiff === 3) { // 11 vs 6
+    if (lowerSeed.momentum === 'hot') upsetRisk += 0.08;
+  } else if (seedDiff === 2) { // 10 vs 7
+    upsetRisk += 0.05;
+  }
+  
+  // Cap at 0.6 (60% max upset probability)
+  upsetRisk = Math.min(0.6, upsetRisk);
+  
+  // Return positive if team1 is the underdog (lower seed number = higher seed)
   return lowerSeed.id === team1.id ? upsetRisk : -upsetRisk;
 }
 

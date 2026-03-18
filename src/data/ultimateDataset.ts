@@ -354,12 +354,12 @@ export const tournamentField2026 = [
   { id: 'long-island', name: 'Long Island', seed: 16, region: 'West', record: '17-14', kenPomRank: 155, adjOE: 99.2, adjDE: 116.5, tempo: 72.8, conference: 'NEC', injuries: [], momentum: 'neutral' },
 ];
 // ============================================================================
-// 11. PREDICTION MODEL WEIGHTS (Based on Historical Accuracy)
+// 11. PREDICTION MODEL WEIGHTS (ADJUSTED for realistic upset predictions)
 // ============================================================================
 
 export const modelWeights = {
-  // Historical seed data (most reliable predictor)
-  seedHistory: 0.25,
+  // Historical seed data (reduced to allow more upsets)
+  seedHistory: 0.22,
   
   // KenPom efficiency metrics
   kenPom: 0.20,
@@ -368,16 +368,16 @@ export const modelWeights = {
   conference: 0.10,
   
   // Injury impact
-  injuries: 0.15,
+  injuries: 0.13,
   
-  // Recent momentum (last 10 games)
-  momentum: 0.10,
+  // Recent momentum (increased - hot teams matter!)
+  momentum: 0.12,
   
   // Coach tournament experience
-  coaching: 0.10,
+  coaching: 0.08,
   
-  // Upset indicators (for specific matchups)
-  upsetFactors: 0.10,
+  // Upset indicators (INCREASED for realistic upset picks)
+  upsetFactors: 0.15,
 };
 
 // ============================================================================
