@@ -57,6 +57,10 @@ export default function Dashboard() {
     }, 500);
   }, [strategy]);
 
+  // Prevent hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const generateNewBracket = () => {
     const rounds = generateFullBracket(teams, strategy);
     setFullBracket(rounds);
@@ -101,6 +105,14 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      {!mounted && (
+        <div className="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-400">Loading xFactor Engine...</p>
+          </div>
+        </div>
+      )}
       {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl animate-pulse" />

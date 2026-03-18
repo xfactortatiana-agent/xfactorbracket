@@ -10,6 +10,12 @@ import {
   tournamentField2026 as tournamentField2025,
   modelWeights,
 } from '../data/ultimateDataset';
+import { getBarttorvikData, calculateBarthagWinProbability as barttorvikWinProb } from '../data/barttorvik2026';
+
+// ============================================================================
+// XFACTOR ULTIMATE PREDICTION ENGINE - Now with Barttorvik Integration!
+// Uses Barthag + neutral court adjusted efficiencies for maximum accuracy
+// ============================================================================
 
 // ============================================================================
 // XFACTOR ULTIMATE PREDICTION ENGINE
