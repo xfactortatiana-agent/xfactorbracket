@@ -379,16 +379,23 @@ class MarchMadnessTrainer:
 
 def main():
     """Main entry point for CLI usage"""
-    if len(sys.argv) < 2:
-        print("Usage: python ml_trainer.py <command> [args]")
-        print("Commands: train, predict, cross_validate")
-        return
+    import argparse
     
-    command = sys.argv[1]
+    parser = argparse.ArgumentParser(description='March Madness ML Trainer')
+    parser.add_argument('command', choices=['train', 'predict', 'cross_validate'], help='Command to run')
+    parser.add_argument('--input', '-i', help='Input JSON file path (default: stdin)')
+    args = parser.parse_args()
+    
+    # Load data from file or stdin
+    if args.input:
+        with open(args.input, 'r') as f:
+            data = json.load(f)
+    else:
+        data = json.load(sys.stdin)
+    
+    command = args.command
     
     if command == 'train':
-        # Load training data from stdin
-        data = json.load(sys.stdin)
         games = data.get('games', [])
         
         print(f"Training on {len(games)} games...")
@@ -404,7 +411,6 @@ def main():
         print(json.dumps(result, indent=2))
         
     elif command == 'cross_validate':
-        data = json.load(sys.stdin)
         games = data.get('games', [])
         
         trainer = MarchMadnessTrainer()
@@ -414,12 +420,9 @@ def main():
         print(json.dumps(result, indent=2))
         
     elif command == 'predict':
-        # Expect model and features
-        data = json.load(sys.stdin)
         features = data.get('features', [])
         
         trainer = MarchMadnessTrainer()
-        # Would need to load trained model here
         result = trainer.predict(features)
         print(json.dumps(result, indent=2))
 

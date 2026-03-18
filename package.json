@@ -16,7 +16,8 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "ml:train": "tsx src/scripts/trainModel.ts",
-    "ml:cv": "tsx src/scripts/trainModel.ts cv"
+    "ml:cv": "tsx src/scripts/trainModel.ts cv",
+    "db:import-kaggle": "tsx src/scripts/importKaggleData.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",

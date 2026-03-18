@@ -95,8 +95,8 @@ async function exportTrainingData(): Promise<TrainingData> {
       team2AdjOE: team2Season?.adjOE || undefined,
       team1AdjDE: team1Season?.adjDE || undefined,
       team2AdjDE: team2Season?.adjDE || undefined,
-      team1Last10WinRate: parseLast10(team1Season?.last10Record),
-      team2Last10WinRate: parseLast10(team2Season?.last10Record),
+      team1Last10WinRate: parseLast10(team1Season?.last10Record ?? undefined),
+      team2Last10WinRate: parseLast10(team2Season?.last10Record ?? undefined),
       team1ConfStrength: confStrength[team1Season?.conference || 'Other'],
       team2ConfStrength: confStrength[team2Season?.conference || 'Other'],
       team1Tempo: team1Season?.adjTempo || undefined,
@@ -137,11 +137,15 @@ async function trainModel() {
     // 4. Run Python trainer
     console.log('🐍 Running Python ML trainer...\n');
     
+    // Write training data to temp file
+    const tmpFile = path.join(__dirname, '../../tmp/training_data.json');
+    fs.mkdirSync(path.dirname(tmpFile), { recursive: true });
+    fs.writeFileSync(tmpFile, JSON.stringify(trainingData));
+    
     const { stdout, stderr } = await execAsync(
-      'python3 ml/trainer.py train',
+      `python3 ml/trainer.py train --input ${tmpFile}`,
       {
         cwd: path.join(__dirname, '../..'),
-        input: JSON.stringify(trainingData),
         maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       }
     );
@@ -219,10 +223,10 @@ async function trainFallbackModel(data: TrainingData) {
     }
     
     // Momentum
-    score += (game.team1Last10WinRate - game.team2Last10WinRate) * 0.5;
+    score += ((game.team1Last10WinRate ?? 0.5) - (game.team2Last10WinRate ?? 0.5)) * 0.5;
     
     // Conference
-    score += (game.team1ConfStrength - game.team2ConfStrength) * 0.3;
+    score += ((game.team1ConfStrength ?? 0.45) - (game.team2ConfStrength ?? 0.45)) * 0.3;
     
     return score > 0;
   };
@@ -245,12 +249,16 @@ async function runCrossValidation() {
   
   const data = await exportTrainingData();
   
+  // Write data to temp file
+  const tmpFile = path.join(__dirname, '../../tmp/cv_data.json');
+  fs.mkdirSync(path.dirname(tmpFile), { recursive: true });
+  fs.writeFileSync(tmpFile, JSON.stringify(data));
+  
   try {
     const { stdout } = await execAsync(
-      'python3 ml/trainer.py cross_validate',
+      `python3 ml/trainer.py cross_validate --input ${tmpFile}`,
       {
         cwd: path.join(__dirname, '../..'),
-        input: JSON.stringify(data),
       }
     );
     

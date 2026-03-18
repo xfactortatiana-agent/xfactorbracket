@@ -247,8 +247,10 @@ export async function importKaggleData(): Promise<{ imported: number; skipped: n
           region: null,
           team1Name,
           team1Score: game.WScore,
+          team1Seed: 0,
           team2Name,
           team2Score: game.LScore,
+          team2Seed: 0,
           winnerSeed: 0, // Would lookup from seeds
           upset: false, // Would calculate
           createdAt: new Date(),

@@ -45,13 +45,15 @@ export interface HybridTeamData {
       wins: number;
       winRate: number;
       streak: number;
-      last10Record: string;
+      last10Record?: string;
     };
     injuries: {
       playerName: string;
       status: string;
-      severity: 'critical' | 'major' | 'moderate' | 'minor';
+      severity?: 'critical' | 'major' | 'moderate' | 'minor';
     }[];
+    hasInjuries?: boolean;
+    criticalInjuries?: number;
     isHot: boolean;
     isCold: boolean;
   } | null;
@@ -118,13 +120,20 @@ export async function predictHybrid(
   if (!skipCache) {
     const cached = await getCachedPrediction(team1Id, team2Id);
     if (cached) {
+      const factors = cached.factors as any || {};
       return {
-        winner: { id: cached.winnerId, name: '', seed: 0 }, // Populate from cache
+        winner: { id: cached.winnerId, name: '', seed: 0 },
         loser: { id: '', name: '', seed: 0 },
         probability: cached.probability,
         confidence: cached.confidence,
         upsetProbability: cached.upsetProbability,
-        factors: cached.factors,
+        factors: {
+          seedHistoryWeight: factors.seedHistoryWeight ?? 0.25,
+          kenPomWeight: factors.kenPomWeight ?? 0.20,
+          momentumWeight: factors.momentumWeight ?? 0.15,
+          injuryWeight: factors.injuryWeight ?? 0.10,
+          historicalWeight: factors.historicalWeight ?? 0.10,
+        },
         reasoning: ['Retrieved from cache'],
         dataSources: ['cache'],
       };
@@ -184,7 +193,10 @@ async function gatherTeamData(
     region: '',
     record: '',
     
-    historical,
+    historical: historical ? {
+      ...historical,
+      seedHistory: [],
+    } : null,
     live,
     metrics: championshipDNA ? {
       kenPomRank: championshipDNA.kenPomRank || null,
@@ -193,7 +205,7 @@ async function gatherTeamData(
       conference: null,
     } : null,
     championshipDNA: championshipDNA ? {
-      hasDNA: championshipDNA.hasChampionshipDNA,
+      hasDNA: !!championshipDNA.hasChampionshipDNA,
       efficiencyMargin: championshipDNA.efficiencyMargin,
       injuryImpact: championshipDNA.injuries.totalImpact,
     } : null,
@@ -262,8 +274,8 @@ function computeHybridPrediction(
     score1 += injuryAdjustment;
     score2 -= injuryAdjustment;
     
-    if (team1.live.criticalInjuries > 0) reasoning.push(`${team1.name} has ${team1.live.criticalInjuries} critical injuries`);
-    if (team2.live.criticalInjuries > 0) reasoning.push(`${team2.name} has ${team2.live.criticalInjuries} critical injuries`);
+    if ((team1.live.criticalInjuries ?? 0) > 0) reasoning.push(`${team1.name} has ${team1.live.criticalInjuries} critical injuries`);
+    if ((team2.live.criticalInjuries ?? 0) > 0) reasoning.push(`${team2.name} has ${team2.live.criticalInjuries} critical injuries`);
     dataSources.push('injury_reports_api');
   }
   
@@ -325,7 +337,7 @@ function computeHybridPrediction(
       historicalWeight: 0.1,
     },
     reasoning,
-    dataSources: [...new Set(dataSources)],
+    dataSources: Array.from(new Set(dataSources)),
   };
 }
 
@@ -371,7 +383,7 @@ export async function updatePredictionsWithLiveData(
     currentPredictions.map(async pred => {
       // Check if this game is live
       const liveGame = liveGames.find(
-        g => (g.team1.name === pred.winner.name || g.team2.name === pred.winner.name) &>
+        g => (g.team1.name === pred.winner.name || g.team2.name === pred.winner.name) &&
              (g.team1.name === pred.loser.name || g.team2.name === pred.loser.name)
       );
       

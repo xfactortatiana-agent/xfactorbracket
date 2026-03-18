@@ -11,7 +11,7 @@ import {
   upsetIndicators,
   conferenceStrength,
 } from './tournamentData';
-import { fetchTeamData, calculateTeamMomentum } from './espnApi';
+import { calculateTeamMomentum } from './espnApi';
 
 const prisma = new PrismaClient();
 
@@ -135,8 +135,8 @@ export async function predictGame(
   }
   
   // 3. CONFERENCE STRENGTH
-  const conf1 = conferenceStrength[team1.conference];
-  const conf2 = conferenceStrength[team2.conference];
+  const conf1 = (conferenceStrength as any)[team1.conference];
+  const conf2 = (conferenceStrength as any)[team2.conference];
   
   if (conf1 && conf2) {
     const confDiff = conf1.winRate - conf2.winRate;

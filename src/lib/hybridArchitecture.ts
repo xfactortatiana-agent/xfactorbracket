@@ -409,6 +409,6 @@ export const hybridPredictor = {
 };
 
 // Placeholder functions
-async function cacheGet(key: string) { return null; }
+async function cacheGet(key: string): Promise<any> { return null; }
 async function cacheSet(key: string, value: any, ttl: number) {}
-async function runUltimatePrediction(t1: any, t2: any) { return {}; }
+async function runUltimatePrediction(t1: any, t2: any): Promise<any> { return {}; }

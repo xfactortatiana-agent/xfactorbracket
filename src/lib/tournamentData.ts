@@ -193,7 +193,7 @@ export async function getHistoricalMatchupStats(seed1: number, seed2: number, ro
 }
 
 export async function getConferenceStrength(conference: string) {
-  return conferenceStrength[conference] || { winRate: 0.40, champions: 0, finalFours: 0, avgSeed: 10 };
+  return (conferenceStrength as any)[conference] || { winRate: 0.40, champions: 0, finalFours: 0, avgSeed: 10 };
 }
 
 export function calculateChampionshipProbability(teamStats: {
@@ -231,7 +231,7 @@ export function calculateChampionshipProbability(teamStats: {
   }
   
   // Conference strength
-  const confStrength = conferenceStrength[teamStats.conference];
+  const confStrength = (conferenceStrength as any)[teamStats.conference];
   if (confStrength) {
     probability *= (0.8 + confStrength.winRate * 0.4);
   }

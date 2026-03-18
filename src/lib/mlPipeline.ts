@@ -128,8 +128,8 @@ export async function extractFeatures(
   // Conference strength
   const team1Conf = team1Season?.conference || 'Other';
   const team2Conf = team2Season?.conference || 'Other';
-  const team1ConfStrength = conferenceStrength[team1Conf]?.winRate || 0.45;
-  const team2ConfStrength = conferenceStrength[team2Conf]?.winRate || 0.45;
+  const team1ConfStrength = (conferenceStrength as any)[team1Conf]?.winRate || 0.45;
+  const team2ConfStrength = (conferenceStrength as any)[team2Conf]?.winRate || 0.45;
   const confStrengthDiff = team1ConfStrength - team2ConfStrength;
   
   // Momentum features
@@ -262,8 +262,8 @@ export class MarchMadnessModel {
           team1Seed: game.team1Seed,
           team2Seed: game.team2Seed,
           winner: game.winnerSeed === game.team1Seed ? game.team1Name : game.team2Name,
-          team1Score: game.team1Score,
-          team2Score: game.team2Score,
+          team1Score: game.team1Score ?? undefined,
+          team2Score: game.team2Score ?? undefined,
           round: game.round,
         },
         team1Season,
@@ -414,7 +414,7 @@ export class EnsemblePredictor {
     this.models.push({ name, weight, predict: predictFn });
   }
   
-  predict(game: any): { team1WinProb: number; breakdown: Array<{ model: string; prob: number; weight: number }> }> {
+  predict(game: any): { team1WinProb: number; breakdown: Array<{ model: string; prob: number; weight: number }> } {
     let totalWeight = 0;
     let weightedProb = 0;
     const breakdown: Array<{ model: string; prob: number; weight: number }> = [];
